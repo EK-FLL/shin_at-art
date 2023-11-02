@@ -21,4 +21,4 @@ pnpm dev
 - Next.js
 - React.js
 - SCSS
-- jsQR
+- React Icons
