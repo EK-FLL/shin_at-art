@@ -1,5 +1,8 @@
-.comment {
-  background-color: "rgba(255, 255, 255, 0.8)";
-  padding: "5px";
-  border-radius: "5px";
+.image {
+  object-fit: contain;
+  position: relative !important;
+  width: 100% !important;
+}
+.size {
+  width: 100%;
 }
