@@ -6,7 +6,7 @@ const Artwork = () => {
   const router = useRouter();
   const { name, id } = router.query;
   return (
-    <>
+    <div className="main">
       <h1>
         {name}が作成した{id}番目の作品
       </h1>
@@ -14,7 +14,7 @@ const Artwork = () => {
       <div className={styles.art}>
         <Art />
       </div>
-    </>
+    </div>
   );
 };
 export default Artwork;

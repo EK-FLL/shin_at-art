@@ -4,7 +4,7 @@ import styles from "@/styles/Art.module.scss";
 
 const Art = () => {
   const [comments, setComments] = useState([
-    { text: "コメント1", x: 100, y: 100 },
+    { text: "コメント1", x: 90, y: 90 },
     { text: "コメント2", x: 50, y: 10 },
     // 他のコメントを追加
   ]);
