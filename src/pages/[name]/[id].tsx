@@ -5,14 +5,13 @@ import styles from "@/styles/Artwork.module.scss";
 const Artwork = () => {
   const router = useRouter();
   const { name, id } = router.query;
+  const ArtId = `/${id}`;
   return (
     <div className="main">
-      <h1>
-        {name}が作成した{id}番目の作品
-      </h1>
-      <Link href="/about">こんにちは</Link>
+      <h1>{id}</h1>
+      <p>作者：{name}</p>
       <div className={styles.art}>
-        <Art />
+        <Art id={ArtId} />
       </div>
     </div>
   );

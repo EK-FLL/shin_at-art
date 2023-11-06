@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import Image from "next/image";
 import styles from "@/styles/Art.module.scss";
 
-const Art = () => {
+const Art = ({ id }) => {
   const [comments, setComments] = useState([
-    { text: "コメント1", x: 90, y: 90 },
+    { text: "コメント1", x: 80, y: 90 },
     { text: "コメント2", x: 50, y: 10 },
     // 他のコメントを追加
   ]);
 
-  const imageSrc = "/testimg.jpg"; // 画像のパス
+  const imageSrc = id; // 画像のパス
 
   return (
     <>
@@ -22,7 +22,7 @@ const Art = () => {
               position: "absolute",
               left: `calc(${comment.x}% - 20px)`,
               top: `calc(${comment.y}% - 20px)`,
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
+              backgroundColor: "rgba(255, 255, 255, 0.5)",
               padding: "5px",
               borderRadius: "5px",
             }}
