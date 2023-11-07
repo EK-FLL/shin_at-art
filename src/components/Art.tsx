@@ -22,7 +22,7 @@ const Art = ({ id }) => {
               position: "absolute",
               left: `calc(${comment.x}% - 20px)`,
               top: `calc(${comment.y}% - 20px)`,
-              backgroundColor: "rgba(255, 255, 255, 0.5)",
+              backgroundColor: "rgba(255, 255, 255, 0.7)",
               padding: "5px",
               borderRadius: "5px",
             }}
