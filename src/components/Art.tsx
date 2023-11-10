@@ -6,8 +6,8 @@ type Prop = {
 };
 const Art = ({ id }: Prop) => {
   const [comments, setComments] = useState([
-    { text: "コメント1", x: 80, y: 90 },
-    { text: "コメント2", x: 50, y: 10 },
+    { text: "神奈川から見た富士山", x: 63, y: 40 },
+    { text: "波かっこいい", x: 47, y: 10 },
     // 他のコメントを追加
   ]);
 
@@ -15,7 +15,7 @@ const Art = ({ id }: Prop) => {
 
   return (
     <>
-      <div className={styles.size} style={{ position: "relative" }}>
+      <div className={styles.art} style={{ position: "relative" }}>
         <Image className={styles.image} src={imageSrc} alt="アートです" fill />
         {comments.map((comment, index) => (
           <>
@@ -24,8 +24,8 @@ const Art = ({ id }: Prop) => {
               key={index}
               style={{
                 position: "absolute",
-                left: `calc(${comment.x}% - 0px)`,
-                top: `calc(${comment.y}% - 0px)`,
+                left: `${comment.x}%`,
+                top: `${comment.y}%`,
               }}
             >
               {comment.text}

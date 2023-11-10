@@ -1,16 +1,11 @@
-$theme3: #9c74bd;
-$theme4: #848c93;
-$theme: (
-  "back": #eae1cf,
-  "font": #3f3c52,
-  "button": #ebb446,
-);
+@use "var";
 
 * {
-  background-color: map-get($theme, "back");
-  color: map-get($theme, "font");
+  background-color: map-get(var.$theme, "back");
+  color: map-get(var.$theme, "font");
 }
 .main {
   width: calc(100% - 10px);
   margin: 0 auto;
+  max-width: 1000px;
 }
