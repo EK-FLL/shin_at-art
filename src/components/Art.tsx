@@ -24,8 +24,8 @@ const Art = ({ id }: Prop) => {
               key={index}
               style={{
                 position: "absolute",
-                left: `${comment.x}%`,
-                top: `${comment.y}%`,
+                left: comment.x + "%",
+                top: comment.y + "%",
               }}
             >
               {comment.text}
