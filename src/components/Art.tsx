@@ -6,7 +6,7 @@ type Prop = {
 };
 const Art = ({ id }: Prop) => {
   const [comments, setComments] = useState([
-    { text: "神奈川から見た富士山", x: 63, y: 40 },
+    { text: "神奈川から見た富士山", x: 64, y: 65 },
     { text: "波かっこいい", x: 47, y: 10 },
     // 他のコメントを追加
   ]);

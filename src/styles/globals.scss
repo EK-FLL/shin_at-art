@@ -1,8 +1,9 @@
 @use "var";
-
 * {
-  background-color: map-get(var.$theme, "back");
   color: map-get(var.$theme, "font");
+}
+body {
+  background-color: map-get(var.$theme, "back");
 }
 .main {
   width: calc(100% - 10px);

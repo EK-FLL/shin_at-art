@@ -10,7 +10,9 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <div className={noto.className}>
       <Meta />
-      <Component {...pageProps} />
+      <div className="main">
+        <Component {...pageProps} />
+      </div>
     </div>
   );
 };

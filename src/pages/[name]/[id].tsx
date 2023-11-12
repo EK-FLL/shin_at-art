@@ -7,13 +7,13 @@ const Artwork = () => {
   const { name, id } = router.query;
   const ArtId = `/${id}`;
   return (
-    <div className="main">
+    <>
       <h1>{id}</h1>
       <p>作者：{name}</p>
       <div className={styles.art}>
         <Art id={ArtId} />
       </div>
-    </div>
+    </>
   );
 };
 export default Artwork;
