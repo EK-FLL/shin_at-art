@@ -9,33 +9,42 @@ const Art = ({ id }: Prop) => {
   const [comments, setComments] = useState([
     { text: "神奈川から見た富士山", x: 64, y: 65 },
     { text: "波かっこいい", x: 47, y: 10 },
-    // 他のコメントを追加
   ]);
 
   const imageSrc = id; // 画像のパス
 
-  // const parentRef = useRef(null);
-  // const childRef = useRef(null);
-  // useEffect(() => {
-  //   const parent = parentRef.current;
-  //   const child = childRef.current;
+  const handleDrag = (d: any) => {
+    console.log("Current position: ", { x: d.x, y: d.y });
+  };
 
-  //   const parentRect = parent.getBoundingClientRect();
-  //   console.log("これは草:", parentRect);
-  //   const childRect = child.getBoundingClientRect();
+  const ArtRef = useRef(null);
+  const [ArtSize, setArtSize] = useState({ width: 0, height: 0 });
 
-  //   const relativePosition = {
-  //     top: parentRect.top - childRect.top,
-  //     left: parentRect.left - childRect.left,
-  //   };
-
-  //   console.log("Relative Position:", relativePosition);
-  // }, []);
+  useEffect(() => {
+    const updateSize = async () => {
+      if (ArtRef.current) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const { clientWidth, clientHeight } = ArtRef.current;
+        setArtSize({ width: clientWidth, height: clientHeight });
+      }
+    };
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => {
+      window.removeEventListener("resize", updateSize);
+    };
+  }, []);
 
   return (
     <>
       <div className={styles.art} style={{ position: "relative" }}>
-        <Image className={styles.image} src={imageSrc} alt="アートです" fill />
+        <Image
+          className={styles.image}
+          src={imageSrc}
+          alt="アートです"
+          fill
+          ref={ArtRef}
+        />
         <Rnd
           className={styles.point}
           default={{
@@ -46,7 +55,10 @@ const Art = ({ id }: Prop) => {
           }}
           enableResizing={false}
           bounds="parent"
-          style={{ position: "absolute" }}
+          onDrag={handleDrag}
+          style={{
+            position: "absolute",
+          }}
         />
         {comments.map((comment, index) => (
           <>
@@ -64,6 +76,8 @@ const Art = ({ id }: Prop) => {
           </>
         ))}
       </div>
+      <p>Width: {ArtSize.width}px</p>
+      <p>Height: {ArtSize.height}px</p>
     </>
   );
 };
