@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import styles from "@/styles/Art.module.scss";
+import { Rnd } from "react-rnd";
 type Prop = {
   id: string;
 };
@@ -13,10 +14,40 @@ const Art = ({ id }: Prop) => {
 
   const imageSrc = id; // 画像のパス
 
+  // const parentRef = useRef(null);
+  // const childRef = useRef(null);
+  // useEffect(() => {
+  //   const parent = parentRef.current;
+  //   const child = childRef.current;
+
+  //   const parentRect = parent.getBoundingClientRect();
+  //   console.log("これは草:", parentRect);
+  //   const childRect = child.getBoundingClientRect();
+
+  //   const relativePosition = {
+  //     top: parentRect.top - childRect.top,
+  //     left: parentRect.left - childRect.left,
+  //   };
+
+  //   console.log("Relative Position:", relativePosition);
+  // }, []);
+
   return (
     <>
       <div className={styles.art} style={{ position: "relative" }}>
         <Image className={styles.image} src={imageSrc} alt="アートです" fill />
+        <Rnd
+          className={styles.point}
+          default={{
+            x: 0,
+            y: 0,
+            width: 60,
+            height: 60,
+          }}
+          enableResizing={false}
+          bounds="parent"
+          style={{ position: "absolute" }}
+        />
         {comments.map((comment, index) => (
           <>
             <div

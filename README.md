@@ -22,3 +22,5 @@ pnpm dev
 - React.js
 - SCSS
 - React Icons
+- Algolia Search
+- react-rnd
