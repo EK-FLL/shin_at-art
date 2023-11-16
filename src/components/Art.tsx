@@ -11,29 +11,24 @@ const Art = ({ id }: Prop) => {
     { text: "波かっこいい", x: 47, y: 10 },
   ]);
 
+  const updateSize = () => {
+    if (ArtRef.current) {
+      const { clientWidth, clientHeight } = ArtRef.current;
+      setArtSize({ width: clientWidth, height: clientHeight });
+    }
+  };
+
   const imageSrc = id; // 画像のパス
 
   const handleDrag = (d: any) => {
+    updateSize();
     console.log("Current position: ", { x: d.x, y: d.y });
   };
 
   const ArtRef = useRef(null);
   const [ArtSize, setArtSize] = useState({ width: 0, height: 0 });
 
-  useEffect(() => {
-    const updateSize = async () => {
-      if (ArtRef.current) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        const { clientWidth, clientHeight } = ArtRef.current;
-        setArtSize({ width: clientWidth, height: clientHeight });
-      }
-    };
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => {
-      window.removeEventListener("resize", updateSize);
-    };
-  }, []);
+
 
   return (
     <>
