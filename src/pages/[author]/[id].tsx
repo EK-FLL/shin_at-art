@@ -4,12 +4,12 @@ import Art from "@/components/Art";
 import styles from "@/styles/Artwork.module.scss";
 const Artwork = () => {
   const router = useRouter();
-  const { name, id } = router.query;
+  const { author, id } = router.query;
   const ArtId = `/${id}`;
   return (
     <>
       <h1>{id}</h1>
-      <p>作者：{name}</p>
+      <p>作者：{author}</p>
       <div className={styles.art}>
         <Art id={ArtId} />
       </div>

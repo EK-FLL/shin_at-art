@@ -8,7 +8,7 @@ type Prop = {
 const Art = ({ id }: Prop) => {
   const [comments, setComments] = useState([
     { text: "神奈川から見た富士山", x: 64, y: 65 },
-    { text: "波かっこいい", x: 47, y: 10 },
+    { text: "波かっこいい", x: 47, y: 20 },
   ]);
 
   const updateSize = () => {
@@ -40,21 +40,6 @@ const Art = ({ id }: Prop) => {
           fill
           ref={ArtRef}
         />
-        <Rnd
-          className={styles.point}
-          default={{
-            x: 0,
-            y: 0,
-            width: 60,
-            height: 60,
-          }}
-          enableResizing={false}
-          bounds="parent"
-          onDrag={handleDrag}
-          style={{
-            position: "absolute",
-          }}
-        />
         {comments.map((comment, index) => (
           <>
             <div
@@ -70,6 +55,21 @@ const Art = ({ id }: Prop) => {
             </div>
           </>
         ))}
+        <Rnd
+          className={styles.point}
+          default={{
+            x: 0,
+            y: 0,
+            width: 40,
+            height: 40,
+          }}
+          enableResizing={false}
+          bounds="parent"
+          onDrag={handleDrag}
+          style={{
+            position: "absolute",
+          }}
+        />
       </div>
       <p>Width: {ArtSize.width}px</p>
       <p>Height: {ArtSize.height}px</p>
