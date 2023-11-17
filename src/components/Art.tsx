@@ -28,8 +28,6 @@ const Art = ({ id }: Prop) => {
   const ArtRef = useRef(null);
   const [ArtSize, setArtSize] = useState({ width: 0, height: 0 });
 
-
-
   return (
     <>
       <div className={styles.art} style={{ position: "relative" }}>

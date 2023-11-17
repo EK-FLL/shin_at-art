@@ -1,6 +1,7 @@
 import "@/styles/globals.scss";
 import type { AppProps } from "next/app";
-import { Meta } from "@/components/Meta";
+import Meta from "@/components/Meta";
+import Header from "@/components/Header";
 import { Noto_Sans_JP } from "next/font/google";
 const noto = Noto_Sans_JP({
   weight: ["500", "700", "900"],
@@ -11,6 +12,7 @@ const App = ({ Component, pageProps }: AppProps) => {
     <div className={noto.className}>
       <Meta />
       <div className="main">
+        <Header></Header>
         <Component {...pageProps} />
       </div>
     </div>

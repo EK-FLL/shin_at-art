@@ -24,3 +24,5 @@ pnpm dev
 - React Icons
 - Algolia Search
 - react-rnd
+- Firebase
+- react-firebase-hooks

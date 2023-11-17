@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-export const Meta = () => {
+const Meta = () => {
   return (
     <Head>
       <meta name="robots" content="noindex" />
@@ -8,3 +8,4 @@ export const Meta = () => {
     </Head>
   );
 };
+export default Meta;

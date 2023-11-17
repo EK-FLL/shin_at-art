@@ -1,0 +1,11 @@
+@use "var";
+.service {
+  font-size: 40px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  line-height: 140%;
+  border: 3px solid map-get(var.$theme, border2);
+  text-align: center;
+  background-color: white;
+}
