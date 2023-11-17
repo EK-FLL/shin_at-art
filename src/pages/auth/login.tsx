@@ -9,6 +9,9 @@ import { useSearchParams } from "next/navigation";
 const SignIn = () => {
   const router = useRouter();
 
+  const handler = (url: string) => {
+    router.push(url);
+  };
   const searchParams = useSearchParams();
   const path = searchParams.get("path");
   const [user] = useAuthState(auth);
@@ -17,9 +20,10 @@ const SignIn = () => {
     <>
       {user ? (
         <>
-          {router.replace(path)}
+          {handler(path)}
           <UserInfo />
           <SignOut />
+          <button onClick={() => handler("/a/img.ipg")}>Click </button>
         </>
       ) : (
         <GoogleSignUp />

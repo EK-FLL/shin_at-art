@@ -6,7 +6,7 @@ type Prop = {
   id: string;
 };
 const Art = ({ id }: Prop) => {
-  const [comments, setComments] = useState([
+  const [comments] = useState([
     { text: "神奈川から見た富士山", x: 64, y: 65 },
     { text: "波かっこいい", x: 47, y: 20 },
   ]);
@@ -39,19 +39,17 @@ const Art = ({ id }: Prop) => {
           ref={ArtRef}
         />
         {comments.map((comment, index) => (
-          <>
-            <div
-              className={styles.art_comment}
-              key={index}
-              style={{
-                position: "absolute",
-                left: comment.x + "%",
-                top: comment.y + "%",
-              }}
-            >
-              {comment.text}
-            </div>
-          </>
+          <div
+            className={styles.art_comment}
+            key={index}
+            style={{
+              position: "absolute",
+              left: comment.x + "%",
+              top: comment.y + "%",
+            }}
+          >
+            {comment.text}
+          </div>
         ))}
         <Rnd
           className={styles.point}

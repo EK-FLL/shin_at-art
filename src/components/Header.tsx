@@ -44,7 +44,7 @@ const Account = () => {
 
 const UserInfo = () => {
   return (
-    <>
+    <div onClick={() => auth.signOut()}>
       <Image
         className={styles.icon}
         src={auth.currentUser?.photoURL ?? ""}
@@ -52,6 +52,6 @@ const UserInfo = () => {
         width={45}
         height={45}
       />
-    </>
+    </div>
   );
 };
