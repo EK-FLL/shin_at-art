@@ -1,9 +1,21 @@
-.main {
-  display: flex;
-  align-items: center;
+@use "var";
+.iconBack {
+  background-color: #000;
+  margin: 0;
+  border-radius: 40px;
+  width: 44px;
+  height: 44px;
+  position: relative;
 }
 .icon {
   border-radius: 40px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.icon:hover {
+  border: 3px solid map-get(var.$theme, border);
 }
 .account {
   margin: 0 0 0 auto;

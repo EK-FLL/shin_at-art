@@ -1,18 +1,31 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { auth, provider } from "@/components/firebase";
+import { auth } from "@/components/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import styles from "@/styles/Header.module.scss";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import React from "react";
+import theme from "./Var";
+import { ThemeProvider } from "@mui/material";
+
 const Header = () => {
   return (
     <>
-      <div className={styles.main}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        spacing={0}
+      >
         <h1>プロジェクト</h1>
         <div className={styles.account}>
           <Account />
         </div>
-      </div>
+      </Stack>
     </>
   );
 };
@@ -20,11 +33,35 @@ export default Header;
 
 const Account = () => {
   const [user] = useAuthState(auth);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   return (
     <>
       {user ? (
         <>
-          <UserInfo />
+          <div onClick={handleClick}>
+            <UserInfo />
+          </div>
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            MenuListProps={{
+              "aria-labelledby": "basic-button",
+            }}
+          >
+            <MenuItem onClick={handleClose}>マイページ</MenuItem>
+            <MenuItem onClick={handleClose}>設定</MenuItem>
+            <MenuItem onClick={() => auth.signOut()}>ログアウト</MenuItem>
+          </Menu>
         </>
       ) : (
         <>
@@ -34,7 +71,7 @@ const Account = () => {
               query: { path: useRouter().asPath },
             }}
           >
-            ログイン
+            <Button variant="contained">ログイン</Button>
           </Link>
         </>
       )}
@@ -44,7 +81,7 @@ const Account = () => {
 
 const UserInfo = () => {
   return (
-    <div onClick={() => auth.signOut()}>
+    <div className={styles.iconBack}>
       <Image
         className={styles.icon}
         src={auth.currentUser?.photoURL ?? ""}
