@@ -15,17 +15,19 @@ import { ThemeProvider } from "@mui/material";
 const Header = () => {
   return (
     <>
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        spacing={0}
-      >
-        <h1>プロジェクト</h1>
-        <div className={styles.account}>
-          <Account />
-        </div>
-      </Stack>
+      <ThemeProvider theme={theme}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={0}
+        >
+          <h1>プロジェクト</h1>
+          <div className={styles.account}>
+            <Account />
+          </div>
+        </Stack>
+      </ThemeProvider>
     </>
   );
 };
@@ -71,7 +73,9 @@ const Account = () => {
               query: { path: useRouter().asPath },
             }}
           >
-            <Button variant="contained">ログイン</Button>
+            <Button variant="contained" color="primary">
+              ログイン
+            </Button>
           </Link>
         </>
       )}

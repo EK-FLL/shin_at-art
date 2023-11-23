@@ -17,6 +17,9 @@
 .icon:hover {
   border: 3px solid map-get(var.$theme, border);
 }
+.icon:active {
+  opacity: 0.9;
+}
 .account {
   margin: 0 0 0 auto;
 }
