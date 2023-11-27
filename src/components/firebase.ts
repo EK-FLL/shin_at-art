@@ -1,22 +1,22 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { GoogleAuthProvider, getAuth } from "firebase/auth";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 const firebaseConfig = {
-  apiKey: "AIzaSyDBIkfdYy5vGg4e71sKAPABXkseMYegkzI",
-  authDomain: "shinkama-project.firebaseapp.com",
-  projectId: "shinkama-project",
-  storageBucket: "shinkama-project.appspot.com",
-  messagingSenderId: "421321926074",
-  appId: "1:421321926074:web:eb0e0adb255ae2fc6c6983",
-  measurementId: "G-DG55YPJ2T9",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "",
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "",
 };
 
 let analytics;
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
 if (typeof window !== "undefined") {
   analytics = getAnalytics(app);
 }
-
-export { auth, provider, analytics };
+const db = getFirestore(app);
+export { auth, analytics, db };
