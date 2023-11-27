@@ -1,13 +1,18 @@
 import { useRouter } from "next/router";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "@/components/firebase";
 import { useEffect, useState } from "react";
 const getAuthor = async (id) => {
-  const docRef = doc(db, "artworks", id);
-  const docSnap = await getDoc(docRef);
-
-  if (docSnap.exists()) {
-    return docSnap.data();
+  const artRef = collection(db, "artworks", id, "arts");
+  const artSnap = await getDocs(artRef);
+  console.log(artSnap);
+  artSnap.forEach((doc) => {
+    console.log(doc.id, " => ", doc.data());
+  });
+  const authorRef = doc(db, "artworks", id);
+  const authorSnap = await getDoc(authorRef);
+  if (authorSnap.exists()) {
+    return authorSnap.data();
   } else {
     return "データが見つかりません。";
   }
@@ -20,6 +25,7 @@ const Author = () => {
     const fetchData = async () => {
       try {
         const authorData = await getAuthor(author);
+        console.log(authorData);
         setAuthorName(authorData.name);
       } catch (error) {
         console.error("エラー:", error);
