@@ -2,14 +2,15 @@ import { useRouter } from "next/router";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "@/components/firebase";
 import { useEffect, useState } from "react";
-const getAuthor = async (id) => {
-  const artRef = collection(db, "artworks", id, "arts");
+import { type } from "os";
+const getAuthor = async (author: string) => {
+  const artRef = collection(db, "artworks", author, "arts");
   const artSnap = await getDocs(artRef);
   console.log(artSnap);
   artSnap.forEach((doc) => {
     console.log(doc.id, " => ", doc.data());
   });
-  const authorRef = doc(db, "artworks", id);
+  const authorRef = doc(db, "authors", author);
   const authorSnap = await getDoc(authorRef);
   if (authorSnap.exists()) {
     return authorSnap.data();
@@ -20,7 +21,7 @@ const getAuthor = async (id) => {
 const Author = () => {
   const router = useRouter();
   const { author } = router.query;
-  const [authorName, setAuthorName] = useState("");
+  const [authorName, setAuthorName] = useState();
   useEffect(() => {
     const fetchData = async () => {
       try {

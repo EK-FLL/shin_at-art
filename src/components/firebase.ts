@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
@@ -19,4 +20,5 @@ if (typeof window !== "undefined") {
   analytics = getAnalytics(app);
 }
 const db = getFirestore(app);
-export { auth, analytics, db };
+const storage = getStorage(app);
+export { auth, analytics, db, storage };

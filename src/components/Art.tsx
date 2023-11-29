@@ -5,7 +5,7 @@ import { Rnd } from "react-rnd";
 type Prop = {
   id: string;
 };
-const Art = ({ id }: Prop) => {
+const Art = ({ img }: Prop) => {
   const [comments] = useState([
     { text: "神奈川から見た富士山", x: 64, y: 65 },
     { text: "波かっこいい", x: 47, y: 20 },
@@ -17,9 +17,6 @@ const Art = ({ id }: Prop) => {
       setArtSize({ width: clientWidth, height: clientHeight });
     }
   };
-
-  const imageSrc = id; // 画像のパス
-
   const handleDrag = (d: any) => {
     updateSize();
     console.log("Current position: ", { x: d.x, y: d.y });
@@ -33,7 +30,7 @@ const Art = ({ id }: Prop) => {
       <div className={styles.art} style={{ position: "relative" }}>
         <Image
           className={styles.image}
-          src={imageSrc}
+          src={img}
           alt="アートです"
           fill
           ref={ArtRef}
