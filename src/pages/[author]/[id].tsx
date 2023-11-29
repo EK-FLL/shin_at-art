@@ -35,19 +35,27 @@ const Artwork = () => {
 export default Artwork;
 
 const getArt = async (author: string, id: string) => {
+  let workData = [];
+  const artData = await getDoc(doc(db, "authors", author, "arts", id));
+  const authorData = await getDoc(doc(db, "authors", author));
+  if (authorData.exists()) {
+    workData.push(authorData.data());
+  } else {
+    workData.push(null);
+  }
+  if (artData.exists()) {
+    workData.push(artData.data());
+  } else {
+    workData.push(null);
+  }
   try {
-    const artData = await getDoc(doc(db, "authors", author, "arts", id));
-    const authorData = await getDoc(doc(db, "authors", author));
     const artURL = await getDownloadURL(
       ref(storage, `/authors/${author}/${id}/img.jpg`)
     );
-    if (artData.exists()) {
-      return [authorData.data(), artData.data(), artURL];
-    } else {
-      return "データが見つかりません。";
-    }
+    workData.push(artURL);
   } catch (error) {
     console.error("エラー:", error);
-    return ["エラー", "エラー", "/load.jpg"];
+    workData.push(null);
   }
+  return workData;
 };
