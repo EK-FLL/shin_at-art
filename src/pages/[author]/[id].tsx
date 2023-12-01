@@ -27,7 +27,7 @@ const Artwork = () => {
       <h1>{artData && artData[1].name}</h1>
       <p>作者：{artData && artData[0].name}</p>
       <div className={styles.art}>
-        <Art img={artData && artData[2]} />
+        <Art img={artData && artData[2]} author={author} id={id} />
       </div>
     </>
   );
