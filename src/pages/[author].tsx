@@ -20,14 +20,16 @@ const getAuthor = async (author: string) => {
 };
 const Author = () => {
   const router = useRouter();
-  const { author } = router.query;
+  const author = String(router.query.author);
   const [authorName, setAuthorName] = useState();
   useEffect(() => {
     const fetchData = async () => {
       try {
         const authorData = await getAuthor(author);
         console.log(authorData);
-        setAuthorName(authorData.name);
+        if (typeof authorData !== "string") {
+          setAuthorName(authorData?.name || "");
+        }
       } catch (error) {
         console.error("エラー:", error);
       }

@@ -37,8 +37,8 @@ const Account = () => {
   const [user] = useAuthState(auth);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget as any);
   };
 
   const handleClose = () => {

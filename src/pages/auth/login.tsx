@@ -9,8 +9,10 @@ import { useSearchParams } from "next/navigation";
 const SignIn = () => {
   const router = useRouter();
 
-  const handler = (url: string) => {
-    router.push(url);
+  const handler = (url: string | null) => {
+    if (url) {
+      router.push(url);
+    }
   };
   const searchParams = useSearchParams();
   const path = searchParams.get("path");

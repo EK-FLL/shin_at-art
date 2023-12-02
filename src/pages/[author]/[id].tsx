@@ -3,18 +3,27 @@ import Link from "next/link";
 import Art from "@/components/Art";
 import styles from "@/styles/Artwork.module.scss";
 import { db, storage } from "@/components/firebase";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  DocumentData,
+} from "firebase/firestore";
 import { useState, useEffect } from "react";
 import { getDownloadURL, ref } from "firebase/storage";
 const Artwork = () => {
   const router = useRouter();
-  const { author, id } = router.query;
-  const [artData, setArtData] = useState();
+  const { author, id } = router.query as { author: string; id: string };
+  const [artData, setArtData] = useState<any>();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const workData = await getArt(author, id);
-        setArtData(workData);
+        const workData: (string | DocumentData | null)[] = await getArt(
+          author,
+          id
+        );
+        setArtData(workData as any);
       } catch (error) {
         console.error("エラー:", error);
       }

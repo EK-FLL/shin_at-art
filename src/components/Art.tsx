@@ -14,15 +14,13 @@ type Prop = {
   id: string;
 };
 type Comment = {
-  // Define the structure of a comment
   text: string;
   x: number;
   y: number;
-  // Add any other properties as needed
 };
 const Art = ({ img, author, id }: Prop) => {
   const [onDoc, setOnDoc] = useState(0);
-  const ArtRef = useRef(null);
+  const ArtRef = useRef<HTMLImageElement>(null);
   const [inputValue, setInputValue] = useState("");
   const [ArtData, setArtData] = useState({
     width: 0,
@@ -40,7 +38,7 @@ const Art = ({ img, author, id }: Prop) => {
           collection(db, "authors", author, "arts", id, "comments")
         );
         querySnapshot.forEach((doc) => {
-          commentsData.push(doc.data());
+          commentsData.push(doc.data() as Comment);
           console.log(commentsData);
         });
         setComments(commentsData);
@@ -77,13 +75,12 @@ const Art = ({ img, author, id }: Prop) => {
       y: positionY,
     });
   };
-  const handleClick = (event) => {
+  const handleClick = (event: React.MouseEvent<HTMLImageElement>) => {
     updateSize();
-    const rect = event.target.getBoundingClientRect();
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     setPostPoint({ x: x, y: y });
-    console.log("クリックした相対座標: ", { x, y });
   };
   const handleButtonClick = async () => {
     const docRef = await addDoc(
