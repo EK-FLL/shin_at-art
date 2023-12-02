@@ -130,7 +130,6 @@ const Art = ({ img, author, id }: Prop) => {
         >
           <div>
             <ThemeProvider theme={theme}>
-              <CssBaseline />
               <Stack direction="row" spacing={0.5}>
                 <TextField
                   id="outlined-basic"
