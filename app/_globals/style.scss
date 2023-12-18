@@ -4,8 +4,6 @@
 }
 body {
   background-color: map-get(var.$theme, "back");
-}
-.main {
   width: calc(100% - 10px);
   margin: 0 auto;
   max-width: 1000px;

@@ -1,8 +1,8 @@
-import { useRouter } from "next/router";
+"use client";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import Art from "@/components/Art";
-import styles from "@/styles/Artwork.module.scss";
-import { db, storage } from "@/components/firebase";
+import Art from "@/app/[author]/[id]/Art";
+import { db, storage } from "@/app/_globals/firebase";
 import {
   collection,
   getDocs,
@@ -13,8 +13,7 @@ import {
 import { useState, useEffect } from "react";
 import { getDownloadURL, ref } from "firebase/storage";
 const Artwork = () => {
-  const router = useRouter();
-  const { author, id } = router.query as { author: string; id: string };
+  const { author, id } = useParams() as { author: string; id: string };
   const [artData, setArtData] = useState<any>();
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +34,7 @@ const Artwork = () => {
     <>
       <h1>{artData && artData[1].name}</h1>
       <p>作者：{artData && artData[0].name}</p>
-      <div className={styles.art}>
+      <div>
         <Art img={artData && artData[2]} author={author} id={id} />
       </div>
     </>

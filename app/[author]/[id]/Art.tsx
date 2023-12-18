@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import styles from "@/styles/Art.module.scss";
+import styles from "@/app/[author]/[id]/Art.module.scss";
 import { Rnd } from "react-rnd";
 import { Button, CssBaseline, Stack, TextField } from "@mui/material";
 import { getDocs, collection, addDoc } from "firebase/firestore";
-import { db } from "./firebase";
-import theme from "./Var";
+import { db } from "@/app/_globals/firebase";
+import theme from "@/app/_globals/Var";
 import { ThemeProvider } from "@mui/material";
 import { set } from "firebase/database";
 type Prop = {

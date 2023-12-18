@@ -1,10 +1,10 @@
-import { auth } from "@/components/firebase";
+"use client";
+import { auth } from "@/app/_globals/firebase";
 import { useSignInWithGoogle, useAuthState } from "react-firebase-hooks/auth";
-import styles from "@/styles/login.module.scss";
+import styles from "@/app/auth/auth.module.scss";
 import { FcGoogle } from "react-icons/fc";
-import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const SignIn = () => {
   const router = useRouter();

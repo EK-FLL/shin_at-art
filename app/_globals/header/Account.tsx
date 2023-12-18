@@ -1,38 +1,12 @@
-import Image from "next/image";
+"use client";
+import { Menu, MenuItem, Button } from "@mui/material";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { auth } from "@/components/firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
-import styles from "@/styles/Header.module.scss";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
-import theme from "./Var";
-import { ThemeProvider } from "@mui/material";
-
-const Header = () => {
-  return (
-    <>
-      <ThemeProvider theme={theme}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          spacing={0}
-        >
-          <h1>プロジェクト</h1>
-          <div className={styles.account}>
-            <Account />
-          </div>
-        </Stack>
-      </ThemeProvider>
-    </>
-  );
-};
-export default Header;
-
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/app/_globals/firebase";
+import styles from "@/app/_globals/header/Header.module.scss";
 const Account = () => {
   const [user] = useAuthState(auth);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -70,7 +44,7 @@ const Account = () => {
           <Link
             href={{
               pathname: "/auth/login",
-              query: { path: useRouter().asPath },
+              query: { path: usePathname() },
             }}
           >
             <Button variant="contained" color="primary">
@@ -96,3 +70,4 @@ const UserInfo = () => {
     </div>
   );
 };
+export default Account;

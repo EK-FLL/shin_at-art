@@ -1,6 +1,7 @@
-import { useRouter } from "next/router";
+"use client";
+import { useParams } from "next/navigation";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
-import { db } from "@/components/firebase";
+import { db } from "@/app/_globals/firebase";
 import { useEffect, useState } from "react";
 import { type } from "os";
 const getAuthor = async (author: string) => {
@@ -19,8 +20,7 @@ const getAuthor = async (author: string) => {
   }
 };
 const Author = () => {
-  const router = useRouter();
-  const author = String(router.query.author);
+  const { author } = useParams() as { author: string };
   const [authorName, setAuthorName] = useState();
   useEffect(() => {
     const fetchData = async () => {
