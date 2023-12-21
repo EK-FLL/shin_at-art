@@ -4,7 +4,7 @@
 
 ```
 gh repo clone ShinKamakura/fll24-project
-pnpm instll
+bun install
 ```
 
 ##### テストサーバー
@@ -12,7 +12,7 @@ pnpm instll
 [http://localhost:3000](http://localhost:3000)
 
 ```bash
-pnpm dev
+bun --bun dev --turbo
 ```
 
 ## 使用
@@ -27,3 +27,4 @@ pnpm dev
 - Firebase
 - react-firebase-hooks
 - Material UI
+- sharp
