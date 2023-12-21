@@ -30,6 +30,5 @@
     "sass": "^1.69.5",
     "typescript": "^5",
     "bun-types": "latest"
-  },
-  "type": "module"
+  }
 }
