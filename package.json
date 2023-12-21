@@ -31,6 +31,5 @@
     "typescript": "^5",
     "bun-types": "latest"
   },
-  "module": "index.ts",
   "type": "module"
 }
