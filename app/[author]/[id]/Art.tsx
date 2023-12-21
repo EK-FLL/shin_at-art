@@ -133,7 +133,7 @@ const Art = ({ img, author, id }: Prop) => {
             <ThemeProvider theme={theme}>
               <Stack direction="row" spacing={0.5}>
                 <TextField
-                  id="outlined-basic"
+                  id="outlined-textarea"
                   label="コメント"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -142,7 +142,8 @@ const Art = ({ img, author, id }: Prop) => {
                   }}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  variant="outlined"
+                  placeholder="20字以内"
+                  multiline
                   size="small"
                 />
                 <Button

@@ -19,7 +19,7 @@ const getAuthor = async (author: string) => {
     return "データが見つかりません。";
   }
 };
-const Author = () => {
+const Home = () => {
   const { author } = useParams() as { author: string };
   const [authorName, setAuthorName] = useState();
   useEffect(() => {
@@ -43,4 +43,4 @@ const Author = () => {
     </>
   );
 };
-export default Author;
+export default Home;

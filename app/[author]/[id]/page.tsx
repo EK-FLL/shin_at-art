@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import { getDownloadURL, ref } from "firebase/storage";
-const Artwork = () => {
+const Home = () => {
   const { author, id } = useParams() as { author: string; id: string };
   const [artData, setArtData] = useState<any>();
   useEffect(() => {
@@ -40,7 +40,7 @@ const Artwork = () => {
     </>
   );
 };
-export default Artwork;
+export default Home;
 
 const getArt = async (author: string, id: string) => {
   let workData = [];

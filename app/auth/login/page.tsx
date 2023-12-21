@@ -6,7 +6,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const SignIn = () => {
+const Home = () => {
   const router = useRouter();
 
   const handler = (url: string | null) => {
@@ -33,7 +33,7 @@ const SignIn = () => {
     </>
   );
 };
-export default SignIn;
+export default Home;
 
 const GoogleSignUp = () => {
   const [signInWithGoogle] = useSignInWithGoogle(auth);
