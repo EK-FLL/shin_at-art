@@ -126,6 +126,7 @@ const Art = ({ img, author, id }: Prop) => {
             position: "absolute",
             left: postPoint.x,
             top: postPoint.y,
+            minWidth: 170,
           }}
         >
           <div>
@@ -133,7 +134,7 @@ const Art = ({ img, author, id }: Prop) => {
               <Stack direction="row" spacing={0.5}>
                 <TextField
                   id="outlined-basic"
-                  label="コメントを入力"
+                  label="コメント"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleButtonClick();
