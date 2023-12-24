@@ -18,20 +18,7 @@ const Home = () => {
   const path = searchParams.get("path");
   const [user] = useAuthState(auth);
 
-  return (
-    <>
-      {user ? (
-        <>
-          {handler(path)}
-          <UserInfo />
-          <SignOut />
-          <button onClick={() => handler("/a/img.ipg")}>Click </button>
-        </>
-      ) : (
-        <GoogleSignUp />
-      )}
-    </>
-  );
+  return <>{user ? <>{handler(path)}</> : <GoogleSignUp />}</>;
 };
 export default Home;
 
@@ -41,20 +28,5 @@ const GoogleSignUp = () => {
     <div onClick={() => signInWithGoogle()} className={styles.service}>
       <FcGoogle />
     </div>
-  );
-};
-const SignOut = () => {
-  return (
-    <button onClick={() => auth.signOut()}>
-      <p>ログアウト</p>
-    </button>
-  );
-};
-const UserInfo = () => {
-  return (
-    <>
-      <p>{auth.currentUser?.displayName}</p>
-      <p>{auth.currentUser?.email}</p>
-    </>
   );
 };

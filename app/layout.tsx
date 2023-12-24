@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "at Art",
   description: "アッと驚く鑑賞を",
   robots: {
-    index: false, // noindexの設定
+    index: false,
   },
 };
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
