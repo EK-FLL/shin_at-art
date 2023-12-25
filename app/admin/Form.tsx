@@ -1,4 +1,6 @@
 "use client";
+import { auth, db } from "@/app/_globals/firebase";
+import { doc, setDoc } from "firebase/firestore";
 import {
   Stack,
   TextField,
@@ -29,9 +31,14 @@ const Form = () => {
     }
     setId(randomString);
   };
-  const authorRegister = () => {};
+  const authorRegister = async (authorId: string, authorName: string) => {
+    await setDoc(doc(db, "authors", authorId), {
+      name: authorName,
+    });
+  };
   return (
     <>
+      <p>{auth.currentUser?.uid || "test"}</p>
       <h3>作者登録</h3>
 
       <Stack
@@ -42,7 +49,7 @@ const Form = () => {
       >
         <TextField id="standard-basic" label="作者名" variant="standard" />
         <TextField id="standard-basic" label="作者ID" variant="standard" />
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" type="submit">
           作者
         </Button>
       </Stack>
