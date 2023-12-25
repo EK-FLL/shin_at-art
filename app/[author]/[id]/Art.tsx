@@ -4,10 +4,11 @@ import styles from "@/app/[author]/[id]/Art.module.scss";
 import { Rnd } from "react-rnd";
 import { Button, CssBaseline, Stack, TextField } from "@mui/material";
 import { getDocs, collection, addDoc } from "firebase/firestore";
-import { db } from "@/app/_globals/firebase";
+import { auth, db } from "@/app/_globals/firebase";
 import theme from "@/app/_globals/Var";
 import { ThemeProvider } from "@mui/material";
 import { set } from "firebase/database";
+import { useAuthState } from "react-firebase-hooks/auth";
 type Prop = {
   img: string;
   author: string;
@@ -19,6 +20,7 @@ type Comment = {
   y: number;
 };
 const Art = ({ img, author, id }: Prop) => {
+  const [user] = useAuthState(auth);
   const [onDoc, setOnDoc] = useState(0);
   const ArtRef = useRef<HTMLImageElement>(null);
   const [inputValue, setInputValue] = useState("");
@@ -120,44 +122,47 @@ const Art = ({ img, author, id }: Prop) => {
             {comment.text}
           </div>
         ))}
-        <div
-          className={styles.art_comment}
-          style={{
-            position: "absolute",
-            left: postPoint.x,
-            top: postPoint.y,
-            minWidth: 170,
-          }}
-        >
-          <div>
-            <ThemeProvider theme={theme}>
-              <Stack direction="row" spacing={0.5}>
-                <TextField
-                  id="outlined-textarea"
-                  label="コメント"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleButtonClick();
-                    }
-                  }}
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="20字以内"
-                  multiline
-                  size="small"
-                />
-                <Button
-                  onClick={handleButtonClick}
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                >
-                  投稿
-                </Button>
-              </Stack>
-            </ThemeProvider>
+
+        {user ? (
+          <div
+            className={styles.art_comment}
+            style={{
+              position: "absolute",
+              left: postPoint.x,
+              top: postPoint.y,
+              minWidth: 170,
+            }}
+          >
+            <div>
+              <ThemeProvider theme={theme}>
+                <Stack direction="row" spacing={0.5}>
+                  <TextField
+                    id="outlined-textarea"
+                    label="コメント"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleButtonClick();
+                      }
+                    }}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    placeholder="20字以内"
+                    multiline
+                    size="small"
+                  />
+                  <Button
+                    onClick={handleButtonClick}
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                  >
+                    投稿
+                  </Button>
+                </Stack>
+              </ThemeProvider>
+            </div>
           </div>
-        </div>
+        ) : null}
         {/* <Rnd
           className={styles.point}
           default={{

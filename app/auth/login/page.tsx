@@ -1,10 +1,13 @@
 "use client";
 import { auth } from "@/app/_globals/firebase";
-import { useSignInWithGoogle, useAuthState } from "react-firebase-hooks/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
 import styles from "@/app/auth/auth.module.scss";
 import { FcGoogle } from "react-icons/fc";
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Button, Stack, TextField, ThemeProvider } from "@mui/material";
+import theme from "@/app/_globals/Var";
+import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 
 const Home = () => {
   const router = useRouter();
@@ -18,15 +21,64 @@ const Home = () => {
   const path = searchParams.get("path");
   const [user] = useAuthState(auth);
 
-  return <>{user ? <>{handler(path)}</> : <GoogleSignUp />}</>;
+  return (
+    <>
+      {user ? (
+        <>{handler(path)}</>
+      ) : (
+        <ThemeProvider theme={theme}>
+          <div className={styles.size}>
+            <Stack
+              direction="column"
+              justifyContent="flex-start"
+              alignItems="center"
+              spacing={2}
+              className={styles.auth}
+            >
+              <h2>ログイン</h2>
+              <EmailSignUp />
+              <GoogleSignUp />
+            </Stack>
+          </div>
+        </ThemeProvider>
+      )}
+    </>
+  );
 };
 export default Home;
-
-const GoogleSignUp = () => {
-  const [signInWithGoogle] = useSignInWithGoogle(auth);
+const EmailSignUp = () => {
   return (
-    <div onClick={() => signInWithGoogle()} className={styles.service}>
-      <FcGoogle />
-    </div>
+    <>
+      <TextField
+        id="standard-basic"
+        label="メールアドレス"
+        variant="standard"
+        fullWidth
+      />
+      <TextField
+        id="standard-password-input"
+        label="パスワード"
+        type="password"
+        autoComplete="current-password"
+        variant="standard"
+        fullWidth
+        margin="normal"
+      />
+      <Button variant="contained">ログイン</Button>
+    </>
+  );
+};
+const GoogleSignUp = () => {
+  const provider = new GoogleAuthProvider();
+  return (
+    <>
+      <Button
+        variant="outlined"
+        startIcon={<FcGoogle />}
+        onClick={() => signInWithRedirect(auth, provider)}
+      >
+        Googleでログイン
+      </Button>
+    </>
   );
 };
