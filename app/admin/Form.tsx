@@ -1,5 +1,5 @@
 "use client";
-import { auth, db } from "@/app/_globals/firebase";
+import { auth, db, storage } from "@/app/_globals/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import {
   Stack,
@@ -11,18 +11,10 @@ import {
   MenuItem,
 } from "@mui/material";
 import { randomBytes } from "crypto";
-import { useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { MdCloudUpload } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
-type Author = {
-  name: string;
-  id: string;
-};
-type Art = {
-  a_id: string;
-  name: string;
-  id: string;
-};
+import firebase from "firebase/compat/app";
 
 const Form = () => {
   return (
@@ -45,9 +37,14 @@ const Author = () => {
     authorRegister(data.name, data.id);
     reset();
   };
+  type Author = {
+    name: string;
+    id: string;
+  };
   const authorRegister = async (authorName: string, authorId: string) => {
     await setDoc(doc(db, "authors", authorId), {
       name: authorName,
+      arts: [],
     });
   };
   return (
@@ -80,8 +77,14 @@ const Author = () => {
     </>
   );
 };
+type Art = {
+  a_id: string;
+  name: string;
+  id: string;
+  image: FileList;
+};
 const Art = () => {
-  const [id, setId] = useState<string>();
+  const [artId, setArtId] = useState<string>("");
   const RandomId = (length: number) => {
     const validUrlCharacters = "abcdefghijklmnopqrstuvwxyz0123456789";
     const validUrlCharactersLength = validUrlCharacters.length;
@@ -95,27 +98,39 @@ const Art = () => {
         randomBytesBuffer.readUInt8(i) % validUrlCharactersLength;
       randomString += validUrlCharacters.charAt(randomIndex);
     }
-    setId(randomString);
+    setArtId(randomString);
   };
   const {
     register,
     handleSubmit,
+    setValue,
     reset,
+    watch,
     formState: { errors },
   } = useForm<Art>();
   const onSubmit: SubmitHandler<Art> = (data) => {
-    artRegister(data.a_id, data.name, data.id);
+    artRegister(data.a_id, data.name, data.id, data.image[0]);
     reset();
   };
+  useEffect(() => {
+    setValue("id", artId);
+  }, [artId, setValue]);
   const artRegister = async (
     authorId: string,
     artName: string,
-    artId: string
+    artId: string,
+    artImg: File
   ) => {
-    await setDoc(doc(db, "authors", authorId), {
-      name: "test",
+    await setDoc(doc(db, "arts", artId), {
+      name: artName,
+      author: authorId,
+    });
+    await setDoc(doc(db, "author", authorId), {
+      arts: firebase.firestore.FieldValue.arrayUnion(artId),
     });
   };
+  const watchedImage = watch("image");
+  const fileName = watchedImage && watchedImage[0] ? watchedImage[0].name : "";
   return (
     <>
       <h3>作品登録</h3>
@@ -143,7 +158,7 @@ const Art = () => {
             id="standard-basic"
             label="作者ID"
             variant="standard"
-            {...register("name", { required: true })}
+            {...register("a_id", { required: true })}
           />
           <TextField
             id="standard-basic"
@@ -161,28 +176,43 @@ const Art = () => {
               id="standard-basic"
               label="作品ID"
               variant="standard"
-              defaultValue="RandomID"
-              value={id}
-              {...register("id", { required: true, minLength: 6 })}
+              value={artId}
+              InputProps={{
+                readOnly: true,
+              }}
+              {...register("id", {
+                required: true,
+              })}
             />
             <Button
               variant="outlined"
               color="primary"
-              onClick={() => {
-                RandomId(6);
-              }}
+              onClick={() => RandomId(6)}
             >
               ID生成
             </Button>
           </Stack>
-          <Button
-            component="label"
-            variant="outlined"
-            startIcon={<MdCloudUpload />}
+          <Stack
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="baseline"
+            spacing={2}
           >
-            画像選択
-            <input type="file" style={{ display: "none" }} />
-          </Button>
+            <Button
+              component="label"
+              variant="outlined"
+              startIcon={<MdCloudUpload />}
+            >
+              画像選択
+              <input
+                type="file"
+                style={{ display: "none" }}
+                accept="image/*"
+                {...register("image", { required: true })}
+              />
+            </Button>
+            <p>{fileName}</p>
+          </Stack>
           <Button variant="contained" color="primary" type="submit">
             作品
           </Button>
