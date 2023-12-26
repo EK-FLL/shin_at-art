@@ -91,6 +91,7 @@ const Art = ({ img, author, id }: Prop) => {
         text: inputValue,
         x: (postPoint.x / ArtData.width) * 100,
         y: (postPoint.y / ArtData.height) * 100,
+        uid: user?.uid,
       }
     );
     setOnDoc(onDoc + 1);
