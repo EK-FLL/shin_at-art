@@ -13,8 +13,74 @@ import {
 import { randomBytes } from "crypto";
 import { useState } from "react";
 import { MdCloudUpload } from "react-icons/md";
+import { SubmitHandler, useForm } from "react-hook-form";
+type Author = {
+  name: string;
+  id: string;
+};
+type Art = {
+  a_id: string;
+  name: string;
+  id: string;
+};
 
 const Form = () => {
+  return (
+    <>
+      <p>{auth.currentUser?.uid || "test"}</p>
+      <Author />
+      <Art />
+    </>
+  );
+};
+export default Form;
+const Author = () => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Author>();
+  const onSubmit: SubmitHandler<Author> = (data) => {
+    authorRegister(data.name, data.id);
+    reset();
+  };
+  const authorRegister = async (authorName: string, authorId: string) => {
+    await setDoc(doc(db, "authors", authorId), {
+      name: authorName,
+    });
+  };
+  return (
+    <>
+      <h3>作者登録</h3>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Stack
+          direction="column"
+          justifyContent="flex-start"
+          alignItems="flex-start"
+          spacing={2}
+        >
+          <TextField
+            id="standard-basic"
+            label="作者名"
+            variant="standard"
+            {...register("name", { required: true })}
+          />
+          <TextField
+            id="standard-basic"
+            label="作者ID"
+            variant="standard"
+            {...register("id", { required: true })}
+          />
+          <Button variant="contained" color="primary" type="submit">
+            作者
+          </Button>
+        </Stack>
+      </form>
+    </>
+  );
+};
+const Art = () => {
   const [id, setId] = useState<string>();
   const RandomId = (length: number) => {
     const validUrlCharacters = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -31,84 +97,97 @@ const Form = () => {
     }
     setId(randomString);
   };
-  const authorRegister = async (authorId: string, authorName: string) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Art>();
+  const onSubmit: SubmitHandler<Art> = (data) => {
+    artRegister(data.a_id, data.name, data.id);
+    reset();
+  };
+  const artRegister = async (
+    authorId: string,
+    artName: string,
+    artId: string
+  ) => {
     await setDoc(doc(db, "authors", authorId), {
-      name: authorName,
+      name: "test",
     });
   };
   return (
     <>
-      <p>{auth.currentUser?.uid || "test"}</p>
-      <h3>作者登録</h3>
-
-      <Stack
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="flex-start"
-        spacing={2}
-      >
-        <TextField id="standard-basic" label="作者名" variant="standard" />
-        <TextField id="standard-basic" label="作者ID" variant="standard" />
-        <Button variant="contained" color="primary" type="submit">
-          作者
-        </Button>
-      </Stack>
       <h3>作品登録</h3>
-      <Stack
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="flex-start"
-        spacing={2}
-      >
-        <FormControl variant="standard" sx={{ minWidth: 200 }}>
-          <InputLabel id="demo-simple-select-label">作者名</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            label="作者名"
-          >
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
-          </Select>
-        </FormControl>
-        <TextField id="standard-basic" label="作品名" variant="standard" />
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Stack
-          direction="row"
+          direction="column"
           justifyContent="flex-start"
-          alignItems="baseline"
+          alignItems="flex-start"
           spacing={2}
         >
+          {/* <FormControl variant="standard" sx={{ minWidth: 200 }}>
+            <InputLabel id="demo-simple-select-label">作者名</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              label="作者名"
+            >
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          </FormControl> */}
+
           <TextField
             id="standard-basic"
-            label="作品ID"
+            label="作者ID"
             variant="standard"
-            defaultValue="RandomID"
-            value={id}
+            {...register("name", { required: true })}
           />
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => {
-              RandomId(6);
-            }}
+          <TextField
+            id="standard-basic"
+            label="作品名"
+            variant="standard"
+            {...register("name", { required: true })}
+          />
+          <Stack
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="baseline"
+            spacing={2}
           >
-            ID生成
+            <TextField
+              id="standard-basic"
+              label="作品ID"
+              variant="standard"
+              defaultValue="RandomID"
+              value={id}
+              {...register("id", { required: true, minLength: 6 })}
+            />
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => {
+                RandomId(6);
+              }}
+            >
+              ID生成
+            </Button>
+          </Stack>
+          <Button
+            component="label"
+            variant="outlined"
+            startIcon={<MdCloudUpload />}
+          >
+            画像選択
+            <input type="file" style={{ display: "none" }} />
+          </Button>
+          <Button variant="contained" color="primary" type="submit">
+            作品
           </Button>
         </Stack>
-        <Button
-          component="label"
-          variant="outlined"
-          startIcon={<MdCloudUpload />}
-        >
-          画像選択
-          <input type="file" style={{ display: "none" }} />
-        </Button>
-        <Button variant="contained" color="primary">
-          作品
-        </Button>
-      </Stack>
+      </form>
     </>
   );
 };
-export default Form;
