@@ -91,7 +91,7 @@ const Art = ({ img, author, id }: Prop) => {
         text: inputValue,
         x: (postPoint.x / ArtData.width) * 100,
         y: (postPoint.y / ArtData.height) * 100,
-        uid: user?.uid,
+        uid: user?.uid || "anonymous",
       }
     );
     setOnDoc(onDoc + 1);
@@ -124,46 +124,44 @@ const Art = ({ img, author, id }: Prop) => {
           </div>
         ))}
 
-        {user ? (
-          <div
-            className={styles.art_comment}
-            style={{
-              position: "absolute",
-              left: postPoint.x,
-              top: postPoint.y,
-              minWidth: 170,
-            }}
-          >
-            <div>
-              <ThemeProvider theme={theme}>
-                <Stack direction="row" spacing={0.5}>
-                  <TextField
-                    id="outlined-textarea"
-                    label="コメント"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleButtonClick();
-                      }
-                    }}
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="20字以内"
-                    multiline
-                    size="small"
-                  />
-                  <Button
-                    onClick={handleButtonClick}
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                  >
-                    投稿
-                  </Button>
-                </Stack>
-              </ThemeProvider>
-            </div>
+        <div
+          className={styles.art_comment}
+          style={{
+            position: "absolute",
+            left: postPoint.x,
+            top: postPoint.y,
+            minWidth: 170,
+          }}
+        >
+          <div>
+            <ThemeProvider theme={theme}>
+              <Stack direction="row" spacing={0.5}>
+                <TextField
+                  id="outlined-textarea"
+                  label="コメント"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleButtonClick();
+                    }
+                  }}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="20字以内"
+                  multiline
+                  size="small"
+                />
+                <Button
+                  onClick={handleButtonClick}
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                >
+                  投稿
+                </Button>
+              </Stack>
+            </ThemeProvider>
           </div>
-        ) : null}
+        </div>
         {/* <Rnd
           className={styles.point}
           default={{

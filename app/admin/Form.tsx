@@ -15,11 +15,13 @@ import { SetStateAction, useEffect, useState } from "react";
 import { MdCloudUpload } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
 import firebase from "firebase/compat/app";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const Form = () => {
+  const [user] = useAuthState(auth);
   return (
     <>
-      <p>{auth.currentUser?.uid || "test"}</p>
+      <p>{user?.uid || "test"}</p>
       <Author />
       <Art />
     </>
