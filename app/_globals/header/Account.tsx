@@ -10,7 +10,7 @@ import styles from "@/app/_globals/header/Header.module.scss";
 const Account = () => {
   const [user] = useAuthState(auth);
   const [anchorEl, setAnchorEl] = React.useState(null);
-
+  const pathname = usePathname();
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget as any);
   };
@@ -44,7 +44,7 @@ const Account = () => {
           <Link
             href={{
               pathname: "/auth/login",
-              query: { path: usePathname() },
+              query: { path: pathname },
             }}
           >
             <Button variant="contained" color="primary">
