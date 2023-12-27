@@ -31,7 +31,7 @@ const Home = () => {
   }, []);
   return (
     <>
-      <h1>Home Next.js</h1>
+      <h1>トップページてすと</h1>
 
       {authors.map((author, index) => (
         <Link key={index} href={author.id}>
