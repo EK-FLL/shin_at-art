@@ -1,0 +1,3 @@
+setup:
+  project: at-art
+  config: dev

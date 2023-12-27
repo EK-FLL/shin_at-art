@@ -3,5 +3,7 @@
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
-  }
+  },
+  "doppler.autocomplete.enable": true,
+  "doppler.hover.enable": true
 }

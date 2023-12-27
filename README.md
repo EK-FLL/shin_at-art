@@ -12,7 +12,7 @@ bun install
 [http://localhost:3000](http://localhost:3000)
 
 ```bash
-bun --bun dev --turbo
+bun dev
 ```
 
 ## 使用
