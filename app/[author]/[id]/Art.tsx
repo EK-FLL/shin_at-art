@@ -2,7 +2,14 @@ import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import styles from "@/app/[author]/[id]/Art.module.scss";
 import { Rnd } from "react-rnd";
-import { Button, CssBaseline, Stack, TextField } from "@mui/material";
+import {
+  Button,
+  CssBaseline,
+  FormControlLabel,
+  Stack,
+  Switch,
+  TextField,
+} from "@mui/material";
 import { getDocs, collection, addDoc } from "firebase/firestore";
 import { auth, db } from "@/app/_globals/firebase";
 import theme from "@/app/_globals/Var";
@@ -32,6 +39,7 @@ const Art = ({ img, author, id }: Prop) => {
   });
   const [postPoint, setPostPoint] = useState({ x: 0, y: 0 });
   const [comments, setComments] = useState<Comment[]>([]);
+  const [check, setCheck] = useState(true);
   useEffect(() => {
     const getComments = async () => {
       try {
@@ -98,9 +106,24 @@ const Art = ({ img, author, id }: Prop) => {
     setInputValue("");
     setPostPoint({ x: 0, y: 0 });
   };
-
+  const handleChangeChecked = (chk: React.ChangeEvent<HTMLInputElement>) => {
+    setCheck(chk.target.checked);
+  };
   return (
     <>
+      <Stack
+        direction="row"
+        justifyContent="flex-end"
+        alignItems="flex-start"
+        spacing={2}
+      >
+        <FormControlLabel
+          control={
+            <Switch defaultChecked onChange={(e) => handleChangeChecked(e)} />
+          }
+          label="コメントを表示"
+        />
+      </Stack>
       <div className={styles.art} style={{ position: "relative" }}>
         <Image
           onClick={handleClick}
@@ -110,19 +133,21 @@ const Art = ({ img, author, id }: Prop) => {
           fill
           ref={ArtRef}
         />
-        {comments.map((comment, index) => (
-          <div
-            className={styles.art_comment}
-            key={index}
-            style={{
-              position: "absolute",
-              left: comment.x + "%",
-              top: comment.y + "%",
-            }}
-          >
-            {comment.text}
-          </div>
-        ))}
+        {check
+          ? comments.map((comment, index) => (
+              <div
+                className={styles.art_comment}
+                key={index}
+                style={{
+                  position: "absolute",
+                  left: comment.x + "%",
+                  top: comment.y + "%",
+                }}
+              >
+                {comment.text}
+              </div>
+            ))
+          : null}
 
         <div
           className={styles.art_comment}
