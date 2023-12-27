@@ -15,7 +15,7 @@ const Header = () => {
           alignItems="center"
           spacing={0}
         >
-          <h1>プロジェクト</h1>
+          <h1>at Art</h1>
           <div className={styles.account}>
             <Account />
           </div>
