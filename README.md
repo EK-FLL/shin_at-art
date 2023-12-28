@@ -12,7 +12,7 @@ bun install
 [http://localhost:3000](http://localhost:3000)
 
 ```bash
-bun dev
+doppler run -- bun --bun dev --turbo
 ```
 
 ## 使用
