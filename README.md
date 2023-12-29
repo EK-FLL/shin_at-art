@@ -2,29 +2,23 @@
 
 ##### 環境構築
 
-```
-gh repo clone ShinKamakura/fll24-project
+```bash
+gh repo clone ShinKamakura/at-art
 bun install
+doppler setup
 ```
 
 ##### テストサーバー
-
-[http://localhost:3000](http://localhost:3000)
 
 ```bash
 doppler run -- bun --bun dev --turbo
 ```
 
-## 使用
+[http://localhost:3000](http://localhost:3000)
 
-- TypeScript
-- Next.js
-- React.js
-- SCSS
-- React Icons
-- Algolia Search
-- react-rnd
-- Firebase
-- react-firebase-hooks
-- Material UI
-- sharp
+## 前提
+
+- Node.js v20
+- Bun v1
+- DopplerCLI v3
+- FirebaseCLI v13
