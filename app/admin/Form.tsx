@@ -159,18 +159,17 @@ const Art = () => {
     artId: string,
     artImg: FileList
   ) => {
-    await setDoc(doc(db, "arts", artId), {
-      name: artName,
-      author: authorId,
-    });
-    console.log(artId, authorId);
-    await updateDoc(doc(db, "authors", authorId), {
-      arts: arrayUnion(artId),
-    });
     const fileType = artImg[0].name.split(".").slice(-1)[0];
     const storageRef = ref(storage, `arts/${artId}/img.${fileType}`);
     uploadBytes(storageRef, artImg[0]).then((snapshot) => {
       console.log("Uploaded a blob or file!");
+    });
+    await setDoc(doc(db, "arts", artId), {
+      name: artName,
+      author: authorId,
+    });
+    await updateDoc(doc(db, "authors", authorId), {
+      arts: arrayUnion(artId),
     });
   };
   const watchedImage = watch("image");
