@@ -5,6 +5,7 @@ import { db } from "@/app/_globals/firebase";
 import { useEffect, useState } from "react";
 import { type } from "os";
 import Link from "next/link";
+import { set } from "firebase/database";
 
 type Art = {
   id: string;
@@ -12,36 +13,8 @@ type Art = {
 };
 const Home = () => {
   const [arts, setArts] = useState<Art[]>([]);
-  const getAuthors = async () => {
-    try {
-      let artsData: Art[] = [];
-      const querySnapshot = await getDocs(
-        collection(db, "authors", author, "arts")
-      );
-      querySnapshot.forEach((doc) => {
-        const art: Art = {
-          id: doc.id,
-          name: (doc.data() as Art).name,
-        };
-        artsData.push(art);
-      });
-      setArts(artsData);
-    } catch (error) {
-      console.error("エラー:", error);
-    }
-  };
-  useEffect(() => {
-    getAuthors();
-  }, []);
   const getAuthor = async (author: string) => {
-    const artRef = collection(db, "artworks", author, "arts");
-    const artSnap = await getDocs(artRef);
-    console.log(artSnap);
-    artSnap.forEach((doc) => {
-      console.log(doc.id, " => ", doc.data());
-    });
-    const authorRef = doc(db, "authors", author);
-    const authorSnap = await getDoc(authorRef);
+    const authorSnap = await getDoc(doc(db, "authors", author));
     if (authorSnap.exists()) {
       return authorSnap.data();
     } else {
@@ -52,14 +25,14 @@ const Home = () => {
   const [authorName, setAuthorName] = useState();
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const authorData = await getAuthor(author);
-        console.log(authorData);
-        if (typeof authorData !== "string") {
-          setAuthorName(authorData?.name || "");
-        }
-      } catch (error) {
-        console.error("エラー:", error);
+      const authorData = await getAuthor(author);
+      if (typeof authorData !== "string") {
+        let arts: Art[] = [];
+        Object.entries(authorData.arts).forEach(([key, value]) => {
+          arts = [...arts, { id: key, name: value as string }];
+        });
+        setArts(arts);
+        setAuthorName(authorData?.name || "");
       }
     };
 

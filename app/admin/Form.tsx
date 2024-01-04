@@ -4,6 +4,7 @@ import {
   arrayUnion,
   collection,
   doc,
+  getDoc,
   getDocs,
   setDoc,
   updateDoc,
@@ -168,8 +169,13 @@ const Art = () => {
       name: artName,
       author: authorId,
     });
+    const authorSnap = await getDoc(doc(db, "authors", authorId));
+    const previousArts = authorSnap.data()?.arts || {};
     await updateDoc(doc(db, "authors", authorId), {
-      arts: arrayUnion(artId),
+      arts: {
+        ...previousArts,
+        [artId]: artName,
+      },
     });
   };
   const watchedImage = watch("image");

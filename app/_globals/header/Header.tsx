@@ -4,6 +4,7 @@ import React from "react";
 import theme from "@/app/_globals/Var";
 import { ThemeProvider } from "@mui/material";
 import Account from "@/app/_globals/header/Account";
+import Link from "next/link";
 
 const Header = () => {
   return (
@@ -15,7 +16,9 @@ const Header = () => {
           alignItems="center"
           spacing={0}
         >
-          <h2>at Art</h2>
+          <Link href="/">
+            <img src="/logo.svg" alt="atArt" className={styles.logo} />
+          </Link>
           <div className={styles.account}>
             <Account />
           </div>
