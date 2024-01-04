@@ -7,8 +7,10 @@ service cloud.firestore {
       allow write: if request.auth != null && request.auth.uid in get(/databases/(default)/documents/users/authority).data.admins;
     }
     match /users/{userId} {
-      allow read: if true;
-      allow create, update: if request.auth.uid == userId;
+      allow write: if request.auth.uid == userId;
+    }
+    match /arts/{artId}/comments/{commentId} {
+    	allow write: if request.auth != null && request.auth.uid in get(/databases/(default)/documents/arts/$(artId)/comments/$(commentId)).data.uid;
     }
   }
 }

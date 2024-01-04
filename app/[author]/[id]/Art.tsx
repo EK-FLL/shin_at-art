@@ -45,7 +45,7 @@ const Art = ({ img, author, id }: Prop) => {
       try {
         let commentsData: Comment[] = [];
         const querySnapshot = await getDocs(
-          collection(db, "authors", author, "arts", id, "comments")
+          collection(db, "arts", id, "comments")
         );
         querySnapshot.forEach((doc) => {
           commentsData.push(doc.data() as Comment);
