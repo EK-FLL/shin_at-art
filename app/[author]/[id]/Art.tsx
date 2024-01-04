@@ -10,7 +10,7 @@ import {
   Switch,
   TextField,
 } from "@mui/material";
-import { getDocs, collection, addDoc } from "firebase/firestore";
+import { getDocs, collection, addDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/app/_globals/firebase";
 import theme from "@/app/_globals/Var";
 import { ThemeProvider } from "@mui/material";
@@ -28,7 +28,6 @@ type Comment = {
 };
 const Art = ({ img, author, id }: Prop) => {
   const [user] = useAuthState(auth);
-  const [onDoc, setOnDoc] = useState(0);
   const ArtRef = useRef<HTMLImageElement>(null);
   const [inputValue, setInputValue] = useState("");
   const [ArtData, setArtData] = useState({
@@ -41,23 +40,16 @@ const Art = ({ img, author, id }: Prop) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [check, setCheck] = useState(true);
   useEffect(() => {
-    const getComments = async () => {
-      try {
-        let commentsData: Comment[] = [];
-        const querySnapshot = await getDocs(
-          collection(db, "arts", id, "comments")
-        );
-        querySnapshot.forEach((doc) => {
-          commentsData.push(doc.data() as Comment);
-          console.log(commentsData);
-        });
-        setComments(commentsData);
-      } catch (error) {
-        console.error("エラー:", error);
-      }
-    };
-    getComments();
-  }, [author, id, onDoc]);
+    const commentsRef = collection(db, "arts", id, "comments");
+    const unsubscribe = onSnapshot(commentsRef, (snapshot) => {
+      let commentsData: Comment[] = [];
+      snapshot.forEach((doc) => {
+        commentsData.push(doc.data() as Comment);
+      });
+      setComments(commentsData);
+    });
+    return () => unsubscribe();
+  }, [id]);
   const updateSize = () => {
     if (ArtRef.current) {
       const { clientWidth, clientHeight } = ArtRef.current;
@@ -97,9 +89,8 @@ const Art = ({ img, author, id }: Prop) => {
       text: inputValue,
       x: (postPoint.x / ArtData.width) * 100,
       y: (postPoint.y / ArtData.height) * 100,
-      uid: user?.uid || "anonymous",
+      uid: user?.uid,
     });
-    setOnDoc(onDoc + 1);
     setInputValue("");
     setPostPoint({ x: 0, y: 0 });
   };
