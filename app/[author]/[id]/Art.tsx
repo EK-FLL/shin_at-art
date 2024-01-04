@@ -93,15 +93,12 @@ const Art = ({ img, author, id }: Prop) => {
     setPostPoint({ x: x, y: y });
   };
   const handleButtonClick = async () => {
-    const docRef = await addDoc(
-      collection(db, "authors", author, "arts", id, "comments"),
-      {
-        text: inputValue,
-        x: (postPoint.x / ArtData.width) * 100,
-        y: (postPoint.y / ArtData.height) * 100,
-        uid: user?.uid || "anonymous",
-      }
-    );
+    const docRef = await addDoc(collection(db, "arts", id, "comments"), {
+      text: inputValue,
+      x: (postPoint.x / ArtData.width) * 100,
+      y: (postPoint.y / ArtData.height) * 100,
+      uid: user?.uid || "anonymous",
+    });
     setOnDoc(onDoc + 1);
     setInputValue("");
     setPostPoint({ x: 0, y: 0 });
