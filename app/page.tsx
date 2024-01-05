@@ -3,7 +3,7 @@ import { getDocs, collection } from "firebase/firestore";
 import { db } from "./_globals/firebase";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Card from "./_globals/Card";
+import Card from "./_globals/Card/Card";
 import { set } from "firebase/database";
 import { Stack } from "@mui/material";
 
@@ -12,6 +12,7 @@ type Author = {
   name: string;
 };
 type Arts = {
+  author: string;
   id: string;
   name: string;
 };
@@ -29,7 +30,10 @@ const Home = () => {
           name: (doc.data() as Author).name,
         };
         Object.entries(doc.data().arts).forEach(([key, value]) => {
-          artsData = [...artsData, { id: key, name: value as string }];
+          artsData = [
+            ...artsData,
+            { author: doc.id, id: key, name: value as string },
+          ];
         });
         authorsData.push(author);
       });
@@ -45,21 +49,23 @@ const Home = () => {
   return (
     <>
       <h1>トップページてすと</h1>
-
+      <h2>作者</h2>
       {authors.map((author, index) => (
         <Link key={index} href={author.id}>
           {author.name}
           <br />
         </Link>
       ))}
+      <h2>おすすめ</h2>
       <Stack
         direction="row"
-        justifyContent="center"
+        justifyContent="flex-start"
         alignItems="flex-start"
         spacing={2}
+        flexWrap="wrap"
       >
         {arts.map((art, index) => (
-          <Card key={index} name={art.name} id={art.id} />
+          <Card key={index} name={art.name} id={art.id} author={art.author} />
         ))}
       </Stack>
     </>

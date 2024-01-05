@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { type } from "os";
 import Link from "next/link";
 import { set } from "firebase/database";
+import Card from "../_globals/Card/Card";
 
 type Art = {
   id: string;
@@ -42,10 +43,7 @@ const Home = () => {
     <>
       <h1>{authorName}のプロフ</h1>
       {arts.map((art, index) => (
-        <Link key={index} href={`${author}/${art.id}`}>
-          {art.name}
-          <br />
-        </Link>
+        <Card key={index} name={art.name} id={art.id} author={author} />
       ))}
     </>
   );

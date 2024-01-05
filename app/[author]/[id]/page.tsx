@@ -12,9 +12,15 @@ import {
 } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import { getDownloadURL, ref } from "firebase/storage";
+import Card from "@/app/_globals/Card/Card";
+type Art = {
+  id: string;
+  name: string;
+};
 const Home = () => {
   const { author, id } = useParams() as { author: string; id: string };
   const [artData, setArtData] = useState<any>();
+  const [arts, setArts] = useState<Art[]>([]);
   const router = useRouter();
   useEffect(() => {
     const fetchData = async () => {
@@ -57,7 +63,18 @@ const Home = () => {
         console.error("エラー:", error);
       }
     };
-
+    const getAuthor = async () => {
+      const authorSnap = await getDoc(doc(db, "authors", author));
+      const authorData = authorSnap.data();
+      if (authorData && typeof authorData !== "string") {
+        let arts: Art[] = [];
+        Object.entries(authorData.arts).forEach(([key, value]) => {
+          arts = [...arts, { id: key, name: value as string }];
+        });
+        setArts(arts);
+      }
+    };
+    getAuthor();
     fetchData();
   }, [author, id]);
   return (
@@ -67,6 +84,10 @@ const Home = () => {
       <div>
         <Art img={artData && artData[2]} author={author} id={id} />
       </div>
+      <h2>{artData ? artData[0].name : "Loading..."}の作品</h2>
+      {arts.map((art, index) => (
+        <Card key={index} name={art.name} id={art.id} author={author} />
+      ))}
     </>
   );
 };
