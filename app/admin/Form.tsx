@@ -259,7 +259,7 @@ const Art = () => {
               <input
                 type="file"
                 style={{ display: "none" }}
-                accept=".png, .jpeg, .jpg"
+                accept="image/*"
                 {...register("image", { required: true })}
               />
             </Button>
