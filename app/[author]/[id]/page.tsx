@@ -90,7 +90,6 @@ const Home = () => {
         direction="row"
         justifyContent="flex-start"
         alignItems="flex-start"
-        spacing={2}
         flexWrap="wrap"
       >
         {arts.map((art, index) => (
