@@ -20,5 +20,6 @@ doppler run -- bun --bun dev --turbo
 
 - Node.js v20
 - Bun v1
-- DopplerCLI v3
-- FirebaseCLI v13
+- Doppler CLI v3
+- Firebase CLI v13
+- Vercel CLI v33

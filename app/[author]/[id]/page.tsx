@@ -13,6 +13,7 @@ import {
 import { useState, useEffect } from "react";
 import { getDownloadURL, ref } from "firebase/storage";
 import Card from "@/app/_globals/Card/Card";
+import { Stack } from "@mui/material";
 type Art = {
   id: string;
   name: string;
@@ -85,9 +86,17 @@ const Home = () => {
         <Art img={artData && artData[2]} author={author} id={id} />
       </div>
       <h2>{artData ? artData[0].name : "Loading..."}の作品</h2>
-      {arts.map((art, index) => (
-        <Card key={index} name={art.name} id={art.id} author={author} />
-      ))}
+      <Stack
+        direction="row"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        spacing={2}
+        flexWrap="wrap"
+      >
+        {arts.map((art, index) => (
+          <Card key={index} name={art.name} id={art.id} author={author} />
+        ))}
+      </Stack>
     </>
   );
 };

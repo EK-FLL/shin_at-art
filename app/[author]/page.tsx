@@ -7,6 +7,7 @@ import { type } from "os";
 import Link from "next/link";
 import { set } from "firebase/database";
 import Card from "../_globals/Card/Card";
+import { Stack } from "@mui/material";
 
 type Art = {
   id: string;
@@ -42,9 +43,17 @@ const Home = () => {
   return (
     <>
       <h1>{authorName}のプロフ</h1>
-      {arts.map((art, index) => (
-        <Card key={index} name={art.name} id={art.id} author={author} />
-      ))}
+      <Stack
+        direction="row"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        spacing={2}
+        flexWrap="wrap"
+      >
+        {arts.map((art, index) => (
+          <Card key={index} name={art.name} id={art.id} author={author} />
+        ))}
+      </Stack>
     </>
   );
 };
