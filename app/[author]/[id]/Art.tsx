@@ -6,9 +6,14 @@ import {
   Button,
   CssBaseline,
   FormControlLabel,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
   Stack,
   Switch,
   TextField,
+  Typography,
 } from "@mui/material";
 import { getDocs, collection, addDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/app/_globals/firebase";
@@ -16,6 +21,9 @@ import theme from "@/app/_globals/Var";
 import { ThemeProvider } from "@mui/material";
 import { set } from "firebase/database";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { HiDotsHorizontal } from "react-icons/hi";
+import { FaRegHeart } from "react-icons/fa";
+import { MdEdit } from "react-icons/md";
 type Prop = {
   img: string;
   author: string;
@@ -27,6 +35,7 @@ type Comment = {
   y: number;
 };
 const Art = ({ img, author, id }: Prop) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const [user] = useAuthState(auth);
   const ArtRef = useRef<HTMLImageElement>(null);
   const [inputValue, setInputValue] = useState("");
@@ -97,6 +106,12 @@ const Art = ({ img, author, id }: Prop) => {
   const handleChangeChecked = (chk: React.ChangeEvent<HTMLInputElement>) => {
     setCheck(chk.target.checked);
   };
+  const editClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget as any);
+  };
+  const editClose = () => {
+    setAnchorEl(null);
+  };
   return (
     <>
       <Stack
@@ -132,11 +147,37 @@ const Art = ({ img, author, id }: Prop) => {
                   top: comment.y + "%",
                 }}
               >
-                {comment.text}
+                <Stack
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="center"
+                  spacing={1}
+                >
+                  <p>{comment.text}</p>
+                  <div className={styles.like}>
+                    <FaRegHeart />
+                  </div>
+                </Stack>
               </div>
             ))
           : null}
-
+        <HiDotsHorizontal onClick={editClick} />
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={editClose}
+          MenuListProps={{
+            "aria-labelledby": "basic-button",
+          }}
+        >
+          <MenuItem>
+            <ListItemIcon>
+              <MdEdit />
+            </ListItemIcon>
+            <ListItemText>Edit</ListItemText>
+          </MenuItem>
+        </Menu>
         <div
           className={styles.art_comment}
           style={{
