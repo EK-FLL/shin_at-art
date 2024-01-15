@@ -24,6 +24,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { FaRegHeart } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
+import { IconContext } from "react-icons";
 type Prop = {
   img: string;
   author: string;
@@ -154,9 +155,27 @@ const Art = ({ img, author, id }: Prop) => {
                   spacing={1}
                 >
                   <p>{comment.text}</p>
-                  <div className={styles.like}>
-                    <FaRegHeart />
+                  <div
+                    className={styles.like}
+                    style={{
+                      position: "relative",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <FaRegHeart
+                      className={styles.heartIcon}
+                      style={{ position: "absolute" }}
+                    />
+                    <p
+                      style={{ position: "absolute" }}
+                      className={styles.likeNum}
+                    >
+                      12
+                    </p>
                   </div>
+                  <div></div>
                 </Stack>
               </div>
             ))
