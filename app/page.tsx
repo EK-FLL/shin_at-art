@@ -51,7 +51,7 @@ const Home = () => {
       <h1>トップページてすと</h1>
       <h2>作者</h2>
       {authors.map((author, index) => (
-        <Link key={index} href={author.id}>
+        <Link key={index} href={`/gallery/${author.id}`}>
           {author.name}
           <br />
         </Link>

@@ -37,7 +37,7 @@ const Card = ({
         <Image src={artURL} alt={name} fill style={{ objectFit: "cover" }} />
       )}
       <Link
-        href={`/${author}/${id}`}
+        href={`/gallery/${author}/${id}`}
         className={styles.name}
         style={{ position: "absolute" }}
       >

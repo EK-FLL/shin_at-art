@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { type } from "os";
 import Link from "next/link";
 import { set } from "firebase/database";
-import Card from "../_globals/Card/Card";
+import Card from "@/app/_globals/Card/Card";
 import { Stack } from "@mui/material";
 
 type Art = {

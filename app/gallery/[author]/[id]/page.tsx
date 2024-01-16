@@ -1,7 +1,7 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import Art from "@/app/[author]/[id]/Art";
+import Art from "./Art";
 import { db, storage } from "@/app/_globals/firebase";
 import {
   collection,

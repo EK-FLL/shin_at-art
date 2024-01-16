@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import styles from "@/app/[author]/[id]/Art.module.scss";
+import styles from "./Art.module.scss";
 import { Rnd } from "react-rnd";
 import {
   Button,
