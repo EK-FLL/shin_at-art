@@ -23,12 +23,12 @@ $radius: 20px;
 }
 
 .like {
-  padding-left: 3px;
+  padding-right: 3px;
 }
+
 .heartIcon {
-  fill: map-get(var.$theme, border);
+  fill: map-get(var.$theme, border2);
 }
 .likeNum {
-  color: map-get(var.$theme, border2);
   font-size: small;
 }

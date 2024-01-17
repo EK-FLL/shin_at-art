@@ -15,14 +15,22 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { getDocs, collection, addDoc, onSnapshot } from "firebase/firestore";
+import {
+  getDocs,
+  collection,
+  addDoc,
+  onSnapshot,
+  serverTimestamp,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { auth, db } from "@/app/_globals/firebase";
 import theme from "@/app/_globals/Var";
 import { ThemeProvider } from "@mui/material";
 import { set } from "firebase/database";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { HiDotsHorizontal } from "react-icons/hi";
-import { FaRegHeart } from "react-icons/fa";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { IconContext } from "react-icons";
 type Prop = {
@@ -31,9 +39,11 @@ type Prop = {
   id: string;
 };
 type Comment = {
+  id: string;
   text: string;
   x: number;
   y: number;
+  like: number;
 };
 const Art = ({ img, author, id }: Prop) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -49,12 +59,14 @@ const Art = ({ img, author, id }: Prop) => {
   const [postPoint, setPostPoint] = useState({ x: 0, y: 0 });
   const [comments, setComments] = useState<Comment[]>([]);
   const [check, setCheck] = useState(true);
+  const [likes, setLikes] = useState<{ [key: string]: boolean }>({});
+
   useEffect(() => {
     const commentsRef = collection(db, "arts", id, "comments");
     const unsubscribe = onSnapshot(commentsRef, (snapshot) => {
       let commentsData: Comment[] = [];
-      snapshot.forEach((doc) => {
-        commentsData.push(doc.data() as Comment);
+      snapshot.forEach((document) => {
+        commentsData.push({ id: document.id, ...document.data() } as Comment);
       });
       setComments(commentsData);
     });
@@ -100,6 +112,8 @@ const Art = ({ img, author, id }: Prop) => {
       x: (postPoint.x / ArtData.width) * 100,
       y: (postPoint.y / ArtData.height) * 100,
       uid: user?.uid,
+      date: serverTimestamp(),
+      like: 0,
     });
     setInputValue("");
     setPostPoint({ x: 0, y: 0 });
@@ -112,6 +126,16 @@ const Art = ({ img, author, id }: Prop) => {
   };
   const editClose = () => {
     setAnchorEl(null);
+  };
+  const likeClick = async (index: number, c_id: string) => {
+    if (user) {
+      setLikes({ ...likes, [index]: !likes[index] });
+      const docRef = await updateDoc(doc(db, "arts", id, "comments", c_id), {
+        like: likes[index]
+          ? comments[index].like - 1
+          : comments[index].like + 1,
+      });
+    }
   };
   return (
     <>
@@ -152,7 +176,7 @@ const Art = ({ img, author, id }: Prop) => {
                   direction="row"
                   justifyContent="center"
                   alignItems="center"
-                  spacing={1}
+                  spacing={1.5}
                 >
                   <p>{comment.text}</p>
                   <div
@@ -163,32 +187,35 @@ const Art = ({ img, author, id }: Prop) => {
                       justifyContent: "center",
                       alignItems: "center",
                     }}
+                    onClick={() => likeClick(index, comment.id)}
                   >
-                    <FaRegHeart
-                      className={styles.heartIcon}
-                      style={{ position: "absolute" }}
-                    />
+                    {likes[index] ? (
+                      <FaHeart
+                        className={styles.heartIcon}
+                        style={{ position: "absolute", color: "red" }}
+                      />
+                    ) : (
+                      <FaRegHeart
+                        className={styles.heartIcon}
+                        style={{ position: "absolute" }}
+                      />
+                    )}
                     <p
                       style={{ position: "absolute" }}
                       className={styles.likeNum}
                     >
-                      8
+                      {comment.like}
                     </p>
                   </div>
-                  <div></div>
                 </Stack>
               </div>
             ))
           : null}
-        <HiDotsHorizontal onClick={editClick} />
         <Menu
           id="basic-menu"
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={editClose}
-          MenuListProps={{
-            "aria-labelledby": "basic-button",
-          }}
         >
           <MenuItem>
             <ListItemIcon>

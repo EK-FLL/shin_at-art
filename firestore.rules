@@ -12,6 +12,7 @@ service cloud.firestore {
     match /arts/{artId}/comments/{commentId} {
     	allow create: if request.auth != null
     	allow update, delete: if request.auth != null && request.auth.uid == get(/databases/(default)/documents/arts/$(artId)/comments/$(commentId)).data.uid;
+      allow update: if request.auth != null && request.resource.data.keys().hasOnly(['like']);
     }
   }
 }
