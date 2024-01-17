@@ -172,7 +172,7 @@ const Art = ({ img, author, id }: Prop) => {
                       style={{ position: "absolute" }}
                       className={styles.likeNum}
                     >
-                      56
+                      8
                     </p>
                   </div>
                   <div></div>
