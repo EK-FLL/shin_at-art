@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, use } from "react";
 import Image from "next/image";
 import styles from "./Art.module.scss";
 import { Rnd } from "react-rnd";
@@ -62,6 +62,9 @@ const Art = ({ img, author, id }: Prop) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [check, setCheck] = useState(true);
   const [likes, setLikes] = useState<{ [key: string]: boolean }>({});
+  const [commentSizes, setCommentSizes] = useState<{ [key: string]: DOMRect }>(
+    {}
+  );
 
   useEffect(() => {
     const commentsRef = collection(db, "arts", id, "comments");
@@ -106,23 +109,26 @@ const Art = ({ img, author, id }: Prop) => {
       });
     }
   };
-  const handleDrag = (d: any) => {
-    updateSize();
-    const positionX = Math.min(
-      100,
-      Math.max(0, ((d.x - ArtData.left) / ArtData.width) * 100)
-    );
-    const positionY = Math.min(
-      100,
-      Math.max(0, ((d.y - ArtData.top) / ArtData.height) * 100)
-    );
-    console.log("Current position: ", {
-      x: positionX,
-      y: positionY,
-    });
-  };
+
+  //ドラッグできる要素
+  // const handleDrag = (d: any) => {
+  //   updateSize();
+  //   const positionX = Math.min(
+  //     100,
+  //     Math.max(0, ((d.x - ArtData.left) / ArtData.width) * 100)
+  //   );
+  //   const positionY = Math.min(
+  //     100,
+  //     Math.max(0, ((d.y - ArtData.top) / ArtData.height) * 100)
+  //   );
+  //   console.log("Current position: ", {
+  //     x: positionX,
+  //     y: positionY,
+  //   });
+  // };
+
+  //コメント投稿
   const handleClick = (event: React.MouseEvent<HTMLImageElement>) => {
-    updateSize();
     const rect = (event.target as HTMLElement).getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
@@ -143,12 +149,16 @@ const Art = ({ img, author, id }: Prop) => {
   const handleChangeChecked = (chk: React.ChangeEvent<HTMLInputElement>) => {
     setCheck(chk.target.checked);
   };
+
+  //自分のコメントの編集
   const editClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget as any);
   };
   const editClose = () => {
     setAnchorEl(null);
   };
+
+  //いいね
   const likeClick = async (c_id: string) => {
     if (user) {
       const commentIndex = comments.findIndex((comment) => comment.id === c_id);
@@ -157,7 +167,6 @@ const Art = ({ img, author, id }: Prop) => {
         ? comments[commentIndex].like + 1
         : comments[commentIndex].like - 1;
 
-      // Update Firestore
       await updateDoc(doc(db, "arts", id, "comments", c_id), {
         like: newLikeCount,
       });
@@ -165,10 +174,8 @@ const Art = ({ img, author, id }: Prop) => {
         isLike: newLikeState,
       });
 
-      // Update likes state
       setLikes((prevLikes) => ({ ...prevLikes, [c_id]: newLikeState }));
 
-      // Update comments state
       setComments((prevComments) =>
         prevComments.map((comment) =>
           comment.id === c_id ? { ...comment, like: newLikeCount } : comment
@@ -176,6 +183,30 @@ const Art = ({ img, author, id }: Prop) => {
       );
     }
   };
+
+  //コメントサイズ
+  const commentRefs = comments.reduce((acc, comment) => {
+    acc[comment.id] = React.createRef<HTMLDivElement>();
+    return acc;
+  }, {} as { [key: string]: React.RefObject<HTMLDivElement> });
+
+  const updateCommentSizes = () => {
+    const newCommentSizes = Object.keys(commentRefs).reduce((acc, id) => {
+      const ref = commentRefs[id];
+      if (ref.current) {
+        acc[id] = ref.current.getBoundingClientRect();
+      }
+      return acc;
+    }, {} as { [key: string]: DOMRect });
+    setCommentSizes(newCommentSizes);
+  };
+
+  useEffect(() => {
+    updateCommentSizes();
+  }, [comments]);
+  useEffect(() => {
+    updateSize();
+  }, [img]);
   return (
     <>
       <Stack
@@ -201,54 +232,59 @@ const Art = ({ img, author, id }: Prop) => {
           ref={ArtRef}
         />
         {check
-          ? comments.map((comment, index) => (
-              <div
-                className={styles.art_comment}
-                key={index}
-                style={{
-                  position: "absolute",
-                  left: comment.x + "%",
-                  top: comment.y + "%",
-                }}
-              >
-                <Stack
-                  direction="row"
-                  justifyContent="center"
-                  alignItems="center"
-                  spacing={1.5}
+          ? comments.map((comment, index) => {
+              return (
+                <div
+                  onClick={() => console.log(commentSizes[comment.id])}
+                  ref={commentRefs[comment.id]}
+                  className={styles.art_comment}
+                  key={index}
+                  style={{
+                    position: "absolute",
+                    left: comment.x + "%",
+                    top: comment.y + "%",
+                    transform: "translateY(-100%)",
+                  }}
                 >
-                  <p>{comment.text}</p>
-                  <div
-                    className={styles.like}
-                    style={{
-                      position: "relative",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                    onClick={() => likeClick(comment.id)}
+                  <Stack
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="center"
+                    spacing={1.5}
                   >
-                    {likes[comment.id] ? (
-                      <FaHeart
-                        className={styles.heartIcon}
-                        style={{ position: "absolute", color: "red" }}
-                      />
-                    ) : (
-                      <FaRegHeart
-                        className={styles.heartIcon}
-                        style={{ position: "absolute" }}
-                      />
-                    )}
-                    <p
-                      style={{ position: "absolute" }}
-                      className={styles.likeNum}
+                    <p>{comment.text}</p>
+                    <div
+                      className={styles.like}
+                      style={{
+                        position: "relative",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                      onClick={() => likeClick(comment.id)}
                     >
-                      {comment.like}
-                    </p>
-                  </div>
-                </Stack>
-              </div>
-            ))
+                      {likes[comment.id] ? (
+                        <FaHeart
+                          className={styles.heartIcon}
+                          style={{ position: "absolute", color: "red" }}
+                        />
+                      ) : (
+                        <FaRegHeart
+                          className={styles.heartIcon}
+                          style={{ position: "absolute" }}
+                        />
+                      )}
+                      <p
+                        style={{ position: "absolute" }}
+                        className={styles.likeNum}
+                      >
+                        {comment.like}
+                      </p>
+                    </div>
+                  </Stack>
+                </div>
+              );
+            })
           : null}
         <Menu
           id="basic-menu"
