@@ -23,6 +23,8 @@ import {
   serverTimestamp,
   updateDoc,
   doc,
+  setDoc,
+  getDoc,
 } from "firebase/firestore";
 import { auth, db } from "@/app/_globals/firebase";
 import theme from "@/app/_globals/Var";
@@ -65,13 +67,33 @@ const Art = ({ img, author, id }: Prop) => {
     const commentsRef = collection(db, "arts", id, "comments");
     const unsubscribe = onSnapshot(commentsRef, (snapshot) => {
       let commentsData: Comment[] = [];
+      let likesData: { [key: string]: boolean } = {};
       snapshot.forEach((document) => {
         commentsData.push({ id: document.id, ...document.data() } as Comment);
+        if (user) {
+          const likeDoc = doc(
+            db,
+            "arts",
+            id,
+            "comments",
+            document.id,
+            "users",
+            user.uid
+          );
+          getDoc(likeDoc).then((likeSnapshot) => {
+            if (likeSnapshot.exists()) {
+              likesData[document.id] = likeSnapshot.data().isLike;
+            } else {
+              likesData[document.id] = false;
+            }
+          });
+        }
       });
       setComments(commentsData);
+      setLikes(likesData);
     });
     return () => unsubscribe();
-  }, [id]);
+  }, [id, user]);
   const updateSize = () => {
     if (ArtRef.current) {
       const { clientWidth, clientHeight } = ArtRef.current;
@@ -107,7 +129,7 @@ const Art = ({ img, author, id }: Prop) => {
     setPostPoint({ x: x, y: y });
   };
   const handleButtonClick = async () => {
-    const docRef = await addDoc(collection(db, "arts", id, "comments"), {
+    await addDoc(collection(db, "arts", id, "comments"), {
       text: inputValue,
       x: (postPoint.x / ArtData.width) * 100,
       y: (postPoint.y / ArtData.height) * 100,
@@ -127,14 +149,31 @@ const Art = ({ img, author, id }: Prop) => {
   const editClose = () => {
     setAnchorEl(null);
   };
-  const likeClick = async (index: number, c_id: string) => {
+  const likeClick = async (c_id: string) => {
     if (user) {
-      setLikes({ ...likes, [index]: !likes[index] });
-      const docRef = await updateDoc(doc(db, "arts", id, "comments", c_id), {
-        like: likes[index]
-          ? comments[index].like - 1
-          : comments[index].like + 1,
+      const commentIndex = comments.findIndex((comment) => comment.id === c_id);
+      const newLikeState = !likes[c_id];
+      const newLikeCount = newLikeState
+        ? comments[commentIndex].like + 1
+        : comments[commentIndex].like - 1;
+
+      // Update Firestore
+      await updateDoc(doc(db, "arts", id, "comments", c_id), {
+        like: newLikeCount,
       });
+      await setDoc(doc(db, "arts", id, "comments", c_id, "users", user?.uid), {
+        isLike: newLikeState,
+      });
+
+      // Update likes state
+      setLikes((prevLikes) => ({ ...prevLikes, [c_id]: newLikeState }));
+
+      // Update comments state
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment.id === c_id ? { ...comment, like: newLikeCount } : comment
+        )
+      );
     }
   };
   return (
@@ -187,9 +226,9 @@ const Art = ({ img, author, id }: Prop) => {
                       justifyContent: "center",
                       alignItems: "center",
                     }}
-                    onClick={() => likeClick(index, comment.id)}
+                    onClick={() => likeClick(comment.id)}
                   >
-                    {likes[index] ? (
+                    {likes[comment.id] ? (
                       <FaHeart
                         className={styles.heartIcon}
                         style={{ position: "absolute", color: "red" }}
