@@ -25,6 +25,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { auth, db } from "@/app/_globals/firebase";
 import theme from "@/app/_globals/Var";
@@ -33,7 +34,7 @@ import { set } from "firebase/database";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdDeleteForever } from "react-icons/md";
 import { IconContext } from "react-icons";
 type Prop = {
   img: string;
@@ -46,6 +47,7 @@ type Comment = {
   x: number;
   y: number;
   like: number;
+  uid: string;
 };
 const Art = ({ img, author, id }: Prop) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -152,6 +154,7 @@ const Art = ({ img, author, id }: Prop) => {
 
   //自分のコメントの編集
   const editClick = (event: React.MouseEvent<HTMLElement>) => {
+    console.log(event);
     setAnchorEl(event.currentTarget as any);
   };
   const editClose = () => {
@@ -199,6 +202,12 @@ const Art = ({ img, author, id }: Prop) => {
       return acc;
     }, {} as { [key: string]: DOMRect });
     setCommentSizes(newCommentSizes);
+  };
+
+  const deleteClick = async (c_text: string, c_id: string) => {
+    if (confirm(`コメント"${c_text}"を削除しますか？`)) {
+      await deleteDoc(doc(db, "arts", id, "comments", c_id));
+    }
   };
 
   useEffect(() => {
@@ -299,52 +308,66 @@ const Art = ({ img, author, id }: Prop) => {
                     spacing={1.5}
                   >
                     <p>{comment.text}</p>
-                    <div
-                      className={styles.like}
-                      style={{
-                        position: "relative",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                      onClick={() => likeClick(comment.id)}
-                    >
-                      {likes[comment.id] ? (
-                        <FaHeart
-                          className={styles.heartIcon}
-                          style={{ position: "absolute", color: "red" }}
-                        />
-                      ) : (
-                        <FaRegHeart
-                          className={styles.heartIcon}
-                          style={{ position: "absolute" }}
-                        />
-                      )}
-                      <p
-                        style={{ position: "absolute" }}
-                        className={styles.likeNum}
+                    {comment.uid == user?.uid ? (
+                      <div
+                        style={{
+                          position: "relative",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                        onClick={() => deleteClick(comment.text, comment.id)}
                       >
-                        {comment.like}
-                      </p>
-                    </div>
+                        <MdDeleteForever />
+                      </div>
+                    ) : (
+                      <div
+                        className={styles.like}
+                        style={{
+                          position: "relative",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                        onClick={() => likeClick(comment.id)}
+                      >
+                        {likes[comment.id] ? (
+                          <FaHeart
+                            className={styles.heartIcon}
+                            style={{ position: "absolute", color: "red" }}
+                          />
+                        ) : (
+                          <FaRegHeart
+                            className={styles.heartIcon}
+                            style={{ position: "absolute" }}
+                          />
+                        )}
+                        <p
+                          style={{ position: "absolute" }}
+                          className={styles.likeNum}
+                        >
+                          {comment.like}
+                        </p>
+                      </div>
+                    )}
                   </Stack>
                 </div>
               );
             })
           : null}
-        <Menu
-          id="basic-menu"
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={editClose}
-        >
-          <MenuItem>
-            <ListItemIcon>
-              <MdEdit />
-            </ListItemIcon>
-            <ListItemText>Edit</ListItemText>
-          </MenuItem>
-        </Menu>
+        {/* <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={editClose}
+          >
+            <MenuItem>
+              <ListItemIcon>
+                <MdDeleteForever />
+              </ListItemIcon>
+              <ListItemText>Delete</ListItemText>
+            </MenuItem>
+          </Menu> */}
         <div
           className={`${styles.input} ${styles.art_comment}`}
           style={{
