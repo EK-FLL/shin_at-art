@@ -205,8 +205,20 @@ const Art = ({ img, author, id }: Prop) => {
     updateCommentSizes();
   }, [comments]);
   useEffect(() => {
-    updateSize();
-  }, [img]);
+    if (ArtRef.current) {
+      const resizeObserver = new ResizeObserver(() => {
+        updateSize();
+      });
+      resizeObserver.observe(ArtRef.current);
+
+      return () => {
+        if (ArtRef.current) {
+          resizeObserver.unobserve(ArtRef.current);
+        }
+      };
+    }
+  }, [ArtRef]);
+  const radiusDefault = "20px";
   return (
     <>
       <Stack
@@ -233,18 +245,52 @@ const Art = ({ img, author, id }: Prop) => {
         />
         {check
           ? comments.map((comment, index) => {
+              let commentStyle: React.CSSProperties = {
+                position: "absolute",
+                left: comment.x + "%",
+                top: comment.y + "%",
+                transform: "",
+                borderTopLeftRadius: radiusDefault,
+                borderTopRightRadius: radiusDefault,
+                borderBottomLeftRadius: radiusDefault,
+                borderBottomRightRadius: radiusDefault,
+                whiteSpace: "nowrap",
+              };
+              if (commentSizes[comment.id]) {
+                if (
+                  ArtData.width * (comment.x / 100) +
+                    commentSizes[comment.id].width <
+                  ArtData.width
+                ) {
+                  if (
+                    ArtData.height * (comment.y / 100) >
+                    commentSizes[comment.id].height
+                  ) {
+                    commentStyle.borderBottomLeftRadius = "5px";
+                    commentStyle.transform = "translate(0,-100%)";
+                  } else {
+                    commentStyle.borderTopLeftRadius = "5px";
+                    commentStyle.transform = "translate(0,0)";
+                  }
+                } else {
+                  if (
+                    ArtData.height * (comment.y / 100) >
+                    commentSizes[comment.id].height
+                  ) {
+                    commentStyle.borderBottomRightRadius = "5px";
+                    commentStyle.transform = "translate(-100%,-100%)";
+                  } else {
+                    commentStyle.borderTopRightRadius = "5px";
+                    commentStyle.transform = "translate(-100%,0)";
+                  }
+                }
+              }
               return (
                 <div
-                  onClick={() => console.log(commentSizes[comment.id])}
                   ref={commentRefs[comment.id]}
                   className={styles.art_comment}
                   key={index}
-                  style={{
-                    position: "absolute",
-                    left: comment.x + "%",
-                    top: comment.y + "%",
-                    transform: "translateY(-100%)",
-                  }}
+                  style={commentStyle}
                 >
                   <Stack
                     direction="row"
@@ -300,7 +346,7 @@ const Art = ({ img, author, id }: Prop) => {
           </MenuItem>
         </Menu>
         <div
-          className={styles.art_comment}
+          className={`${styles.input} ${styles.art_comment}`}
           style={{
             position: "absolute",
             left: postPoint.x,
