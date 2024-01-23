@@ -13,56 +13,51 @@ import {
 import { useState, useEffect } from "react";
 import { getDownloadURL, ref } from "firebase/storage";
 import Card from "@/app/_globals/Card/Card";
-import { Stack } from "@mui/material";
+import { Stack, typographyClasses } from "@mui/material";
 type Art = {
   id: string;
   name: string;
 };
+type ArtData = {
+  author: DocumentData;
+  art: DocumentData;
+  artURL: string;
+};
 const Home = () => {
   const { author, id } = useParams() as { author: string; id: string };
-  const [artData, setArtData] = useState<any>();
+  const [artData, setArtData] = useState<any>({});
   const [arts, setArts] = useState<Art[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        let workData = [];
-        const artData = await getDoc(doc(db, "arts", id));
-        const authorData = await getDoc(
-          doc(db, "authors", artData.data()?.author)
-        );
-
-        if (authorData.exists()) {
-          workData.push(authorData.data());
-        } else {
-          workData.push(null);
-        }
-        if (artData.exists()) {
-          workData.push(artData.data());
-        } else {
-          workData.push(null);
-        }
-        try {
-          const artURL = await getDownloadURL(
-            ref(storage, `/arts/${id}/img.jpg`)
-          );
-          workData.push(artURL);
-        } catch (error) {
-          console.error("エラー:", error);
-          workData.push(null);
-        }
-        if (
-          typeof workData[1] === "object" &&
-          workData[1] !== null &&
-          "author" in workData[1] &&
-          workData[1]?.author != author
-        ) {
-          router.push(`/${workData[1]?.author}/${id}`);
-        }
-        setArtData(workData);
-      } catch (error) {
-        console.error("エラー:", error);
+      let workData: ArtData = {
+        author: undefined,
+        art: undefined,
+        artURL: "",
+      };
+      const artData = await getDoc(doc(db, "arts", id));
+      const authorData = await getDoc(
+        doc(db, "authors", artData.data()?.author)
+      );
+      if (authorData.exists()) {
+        workData[author] = authorData.data();
       }
+      if (artData.exists()) {
+        workData[art] = artData.data();
+      }
+      const artURL = await getDownloadURL(ref(storage, `/arts/${id}/img.jpg`));
+      workData[artURL] = artURL;
+      if (
+        typeof workData.art === "object" &&
+        workData.art !== null &&
+        "author" in workData.art &&
+        workData.art?.author != author
+      ) {
+        router.push(`/${workData[1]?.author}/${id}`);
+      }
+      setArtData(workData);
+      setLoading(false);
     };
     const getAuthor = async () => {
       const authorSnap = await getDoc(doc(db, "authors", author));
@@ -73,6 +68,7 @@ const Home = () => {
           arts = [...arts, { id: key, name: value as string }];
         });
         setArts(arts);
+        setLoading(false);
       }
     };
     getAuthor();
@@ -80,12 +76,12 @@ const Home = () => {
   }, [author, id]);
   return (
     <>
-      <h1>{artData ? artData[1].name : "Loading..."}</h1>
-      <p>作者：{artData ? artData[0].name : "Loading..."}</p>
+      <h1>{artData ? artData.art.name : "Loading..."}</h1>
+      <p>作者：{artData ? artData.author.name : "Loading..."}</p>
       <div>
-        <Art img={artData && artData[2]} author={author} id={id} />
+        <Art img={artData && artData.artURL} author={author} id={id} />
       </div>
-      <h2>{artData ? artData[0].name : "Loading..."}の作品</h2>
+      <h2>{artData ? artData.author.name : "Loading..."}の作品</h2>
       <Stack
         direction="row"
         justifyContent="flex-start"
