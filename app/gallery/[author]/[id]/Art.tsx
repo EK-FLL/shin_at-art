@@ -43,6 +43,7 @@ type Prop = {
 };
 type Comment = {
   id: string;
+  score: number;
   text: string;
   x: number;
   y: number;
@@ -77,8 +78,16 @@ const Art = ({ img, author, id }: Prop) => {
         const diffTime =
           new Date().getTime() - document.data().date.toDate().getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        console.log(diffDays);
-        commentsData.push({ id: document.id, ...document.data() } as Comment);
+        const score =
+          500 / (diffDays + 10) +
+          5 * Math.cos(5 * diffDays) +
+          5 +
+          4 * document.data().like;
+        commentsData.push({
+          id: document.id,
+          score: score,
+          ...document.data(),
+        } as Comment);
         if (user) {
           const likeDoc = doc(
             db,
@@ -98,6 +107,7 @@ const Art = ({ img, author, id }: Prop) => {
           });
         }
       });
+      commentsData.sort((a, b) => b.score - a.score);
       setComments(commentsData);
       setLikes(likesData);
     });
@@ -269,6 +279,7 @@ const Art = ({ img, author, id }: Prop) => {
                 borderBottomRightRadius: radiusDefault,
                 whiteSpace: "nowrap",
               };
+              console.log(commentSizes);
               if (commentSizes[comment.id]) {
                 if (
                   ArtData.width * (comment.x / 100) +
@@ -388,12 +399,18 @@ const Art = ({ img, author, id }: Prop) => {
                   id="outlined-textarea"
                   label="コメント"
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") {
+                    if (
+                      e.key === "Enter" &&
+                      inputValue.length >= 1 &&
+                      inputValue.length <= 20
+                    ) {
                       handleButtonClick();
                     }
                   }}
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  onChange={(e) => {
+                    setInputValue(e.target.value);
+                  }}
                   placeholder="20字以内"
                   multiline
                   size="small"
@@ -403,6 +420,9 @@ const Art = ({ img, author, id }: Prop) => {
                   variant="contained"
                   color="primary"
                   size="small"
+                  disabled={
+                    !(inputValue.length >= 1 && inputValue.length <= 20)
+                  }
                 >
                   投稿
                 </Button>
