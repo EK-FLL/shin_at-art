@@ -19,8 +19,8 @@ type Art = {
   name: string;
 };
 type ArtData = {
-  author: DocumentData;
-  art: DocumentData;
+  author: DocumentData | undefined;
+  art: DocumentData | undefined;
   artURL: string;
 };
 const Home = () => {
@@ -41,20 +41,20 @@ const Home = () => {
         doc(db, "authors", artData.data()?.author)
       );
       if (authorData.exists()) {
-        workData[author] = authorData.data();
+        workData["author"] = authorData.data();
       }
       if (artData.exists()) {
-        workData[art] = artData.data();
+        workData["art"] = artData.data();
       }
       const artURL = await getDownloadURL(ref(storage, `/arts/${id}/img.jpg`));
-      workData[artURL] = artURL;
+      workData["artURL"] = artURL;
       if (
-        typeof workData.art === "object" &&
-        workData.art !== null &&
-        "author" in workData.art &&
-        workData.art?.author != author
+        typeof workData["art"] === "object" &&
+        workData["art"] !== null &&
+        "author" in workData["art"] &&
+        workData["art"]?.author != author
       ) {
-        router.push(`/${workData[1]?.author}/${id}`);
+        router.push(`/${workData["art"]?.author}/${id}`);
       }
       setArtData(workData);
       setLoading(false);
@@ -76,12 +76,16 @@ const Home = () => {
   }, [author, id]);
   return (
     <>
-      <h1>{artData ? artData.art.name : "Loading..."}</h1>
-      <p>作者：{artData ? artData.author.name : "Loading..."}</p>
+      <h1>{artData && artData.art ? artData.art.name : "Loading..."}</h1>
+      <p>
+        作者：{artData && artData.author ? artData.author.name : "Loading..."}
+      </p>
       <div>
         <Art img={artData && artData.artURL} author={author} id={id} />
       </div>
-      <h2>{artData ? artData.author.name : "Loading..."}の作品</h2>
+      <h2>
+        {artData && artData.author ? artData.author.name : "Loading..."}の作品
+      </h2>
       <Stack
         direction="row"
         justifyContent="flex-start"

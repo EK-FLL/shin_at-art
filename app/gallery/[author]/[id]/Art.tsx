@@ -74,6 +74,10 @@ const Art = ({ img, author, id }: Prop) => {
       let commentsData: Comment[] = [];
       let likesData: { [key: string]: boolean } = {};
       snapshot.forEach((document) => {
+        const diffTime =
+          new Date().getTime() - document.data().date.toDate().getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        console.log(diffDays);
         commentsData.push({ id: document.id, ...document.data() } as Comment);
         if (user) {
           const likeDoc = doc(
