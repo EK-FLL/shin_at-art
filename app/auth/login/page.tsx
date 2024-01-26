@@ -36,6 +36,7 @@ const Home = () => {
               className={styles.auth}
             >
               <h2>ログイン</h2>
+              <p>現在Googleのみでログイン可能です</p>
               <EmailSignUp />
               <GoogleSignUp />
             </Stack>
@@ -54,6 +55,7 @@ const EmailSignUp = () => {
         label="メールアドレス"
         variant="standard"
         fullWidth
+        disabled
       />
       <TextField
         id="standard-password-input"
@@ -63,8 +65,11 @@ const EmailSignUp = () => {
         variant="standard"
         fullWidth
         margin="normal"
+        disabled
       />
-      <Button variant="contained">ログイン</Button>
+      <Button variant="contained" disabled>
+        ログイン
+      </Button>
     </>
   );
 };
