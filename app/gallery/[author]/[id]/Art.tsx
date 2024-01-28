@@ -148,6 +148,7 @@ const Art = ({ img, author, id }: Prop) => {
     const rect = (event.target as HTMLElement).getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
+    console.log("x: " + x + " y: " + y);
     setPostPoint({ x: x, y: y });
   };
   const handleButtonClick = async () => {
@@ -279,7 +280,6 @@ const Art = ({ img, author, id }: Prop) => {
                 borderBottomRightRadius: radiusDefault,
                 whiteSpace: "nowrap",
               };
-              console.log(commentSizes);
               if (commentSizes[comment.id]) {
                 if (
                   ArtData.width * (comment.x / 100) +
@@ -315,6 +315,7 @@ const Art = ({ img, author, id }: Prop) => {
                   className={styles.art_comment}
                   key={index}
                   style={commentStyle}
+                  onClick={() => console.log(commentSizes[comment.id])}
                 >
                   <Stack
                     direction="row"
