@@ -229,15 +229,16 @@ const Art = ({ img, author, id }: Prop) => {
     updateCommentSizes();
   }, [comments]);
   useEffect(() => {
-    if (ArtRef.current) {
+    const current = ArtRef.current;
+    if (current) {
       const resizeObserver = new ResizeObserver(() => {
         updateSize();
       });
-      resizeObserver.observe(ArtRef.current);
+      resizeObserver.observe(current);
 
       return () => {
-        if (ArtRef.current) {
-          resizeObserver.unobserve(ArtRef.current);
+        if (current) {
+          resizeObserver.unobserve(current);
         }
       };
     }
