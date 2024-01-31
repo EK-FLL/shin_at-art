@@ -19,5 +19,5 @@ const auth = getAuth(app);
 const analytics = typeof window !== "undefined" ? getAnalytics(app) : undefined;
 const db = getFirestore(app);
 const storage = getStorage(app);
-const perf = getPerformance(app);
+const perf = typeof window !== "undefined" ? getPerformance(app) : undefined;
 export { auth, analytics, db, storage, perf };
