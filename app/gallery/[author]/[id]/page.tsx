@@ -31,7 +31,7 @@ const Home = () => {
   const router = useRouter();
   useEffect(() => {
     const fetchData = async () => {
-      let workData: ArtData = {
+      const workData: ArtData = {
         author: undefined,
         art: undefined,
         artURL: "",

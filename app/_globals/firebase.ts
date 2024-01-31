@@ -3,6 +3,7 @@ import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getPerformance } from "firebase/performance";
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
@@ -13,12 +14,10 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "",
 };
 
-let analytics;
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-if (typeof window !== "undefined") {
-  analytics = getAnalytics(app);
-}
+const analytics = typeof window !== "undefined" ? getAnalytics(app) : undefined;
 const db = getFirestore(app);
 const storage = getStorage(app);
-export { auth, analytics, db, storage };
+const perf = getPerformance(app);
+export { auth, analytics, db, storage, perf };
