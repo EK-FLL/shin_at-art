@@ -7,7 +7,11 @@ import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button, Stack, TextField, ThemeProvider } from "@mui/material";
 import theme from "@/app/_globals/Var";
-import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+} from "firebase/auth";
 
 const Home = () => {
   const router = useRouter();
@@ -80,7 +84,7 @@ const GoogleSignUp = () => {
       <Button
         variant="outlined"
         startIcon={<FcGoogle />}
-        onClick={() => signInWithRedirect(auth, provider)}
+        onClick={() => signInWithPopup(auth, provider)}
       >
         Googleでログイン
       </Button>
