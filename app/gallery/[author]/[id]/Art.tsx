@@ -12,6 +12,8 @@ import {
   MenuItem,
   Stack,
   Switch,
+  Tab,
+  Tabs,
   TextField,
   Typography,
 } from "@mui/material";
@@ -50,6 +52,13 @@ type Comment = {
   like: number;
   uid: string;
 };
+type CommentPosition = {
+  id: string | number;
+  x1: number;
+  x2: number;
+  y1: number;
+  y2: number;
+};
 const Art = ({ img, author, id }: Prop) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [user] = useAuthState(auth);
@@ -63,12 +72,14 @@ const Art = ({ img, author, id }: Prop) => {
   });
   const [postPoint, setPostPoint] = useState({ x: 0, y: 0 });
   const [comments, setComments] = useState<Comment[]>([]);
-  const [check, setCheck] = useState(true);
   const [likes, setLikes] = useState<{ [key: string]: boolean }>({});
   const [commentSizes, setCommentSizes] = useState<{ [key: string]: DOMRect }>(
     {}
   );
-
+  const [commentState, setCommentState] = useState(0);
+  const handleComment = (event: React.SyntheticEvent, newValue: number) => {
+    setCommentState(newValue);
+  };
   useEffect(() => {
     const commentsRef = collection(db, "arts", id, "comments");
     const unsubscribe = onSnapshot(commentsRef, (snapshot) => {
@@ -163,9 +174,6 @@ const Art = ({ img, author, id }: Prop) => {
     setInputValue("");
     setPostPoint({ x: 0, y: 0 });
   };
-  const handleChangeChecked = (chk: React.ChangeEvent<HTMLInputElement>) => {
-    setCheck(chk.target.checked);
-  };
 
   //自分のコメントの編集
   const editClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -244,6 +252,7 @@ const Art = ({ img, author, id }: Prop) => {
     }
   }, [ArtRef]);
   const radiusDefault = "20px";
+  let commentPositions: CommentPosition[] = [];
   return (
     <>
       <Stack
@@ -252,12 +261,16 @@ const Art = ({ img, author, id }: Prop) => {
         alignItems="flex-start"
         spacing={2}
       >
-        <FormControlLabel
-          control={
-            <Switch defaultChecked onChange={(e) => handleChangeChecked(e)} />
-          }
-          label="コメントを表示"
-        />
+        <Tabs
+          onChange={handleComment}
+          value={commentState}
+          aria-label="Tabs where selection follows focus"
+          selectionFollowsFocus
+        >
+          <Tab label="おすすめ" />
+          <Tab label="すべて" />
+          <Tab label="非表示" />
+        </Tabs>
       </Stack>
       <div className={styles.art} style={{ position: "relative" }}>
         <Image
@@ -268,110 +281,197 @@ const Art = ({ img, author, id }: Prop) => {
           fill
           ref={ArtRef}
         />
-        {check
-          ? comments.map((comment, index) => {
-              let commentStyle: React.CSSProperties = {
-                position: "absolute",
-                left: comment.x + "%",
-                top: comment.y + "%",
-                transform: "",
-                borderTopLeftRadius: radiusDefault,
-                borderTopRightRadius: radiusDefault,
-                borderBottomLeftRadius: radiusDefault,
-                borderBottomRightRadius: radiusDefault,
-                whiteSpace: "nowrap",
-              };
-              if (commentSizes[comment.id]) {
+        {comments.map((comment, index) => {
+          let commentStyle: React.CSSProperties = {
+            position: "absolute",
+            left: comment.x + "%",
+            top: comment.y + "%",
+            transform: "",
+            borderTopLeftRadius: radiusDefault,
+            borderTopRightRadius: radiusDefault,
+            borderBottomLeftRadius: radiusDefault,
+            borderBottomRightRadius: radiusDefault,
+            whiteSpace: "nowrap",
+            opacity: 1,
+          };
+          if (commentSizes[comment.id]) {
+            const setPoint = (commentData: {
+              x: number;
+              id: string | number;
+              y: number;
+            }) => {
+              if (
+                ArtData.width * (commentData.x / 100) +
+                  commentSizes[commentData.id].width <
+                ArtData.width
+              ) {
                 if (
-                  ArtData.width * (comment.x / 100) +
-                    commentSizes[comment.id].width <
-                  ArtData.width
+                  ArtData.height * (commentData.y / 100) >
+                  commentSizes[commentData.id].height
                 ) {
-                  if (
-                    ArtData.height * (comment.y / 100) >
-                    commentSizes[comment.id].height
-                  ) {
-                    commentStyle.borderBottomLeftRadius = "5px";
-                    commentStyle.transform = "translate(0,-100%)";
-                  } else {
-                    commentStyle.borderTopLeftRadius = "5px";
-                    commentStyle.transform = "translate(0,0)";
-                  }
+                  commentStyle.borderBottomLeftRadius = "5px";
+                  commentStyle.transform = "translate(0,-100%)";
+                  const commentPosition = {
+                    id: commentData.id,
+                    x1: ArtData.width * (commentData.x / 100),
+                    x2:
+                      ArtData.width * (commentData.x / 100) +
+                      commentSizes[commentData.id].width,
+                    y1:
+                      ArtData.height * (commentData.y / 100) -
+                      commentSizes[commentData.id].height,
+                    y2: ArtData.height * (commentData.y / 100),
+                  };
+                  return commentPosition;
                 } else {
-                  if (
-                    ArtData.height * (comment.y / 100) >
-                    commentSizes[comment.id].height
-                  ) {
-                    commentStyle.borderBottomRightRadius = "5px";
-                    commentStyle.transform = "translate(-100%,-100%)";
-                  } else {
-                    commentStyle.borderTopRightRadius = "5px";
-                    commentStyle.transform = "translate(-100%,0)";
-                  }
+                  commentStyle.borderTopLeftRadius = "5px";
+                  commentStyle.transform = "translate(0,0)";
+                  const commentPosition = {
+                    id: commentData.id,
+                    x1: ArtData.width * (commentData.x / 100),
+                    x2:
+                      ArtData.width * (commentData.x / 100) +
+                      commentSizes[commentData.id].width,
+                    y1: ArtData.height * (commentData.y / 100),
+                    y2:
+                      ArtData.height * (commentData.y / 100) +
+                      commentSizes[commentData.id].height,
+                  };
+                  return commentPosition;
+                }
+              } else {
+                if (
+                  ArtData.height * (commentData.y / 100) >
+                  commentSizes[commentData.id].height
+                ) {
+                  commentStyle.borderBottomRightRadius = "5px";
+                  commentStyle.transform = "translate(-100%,-100%)";
+                  const commentPosition = {
+                    id: commentData.id,
+                    x1:
+                      ArtData.width * (commentData.x / 100) -
+                      commentSizes[commentData.id].width,
+                    x2: ArtData.width * (commentData.x / 100),
+                    y1:
+                      ArtData.height * (commentData.y / 100) -
+                      commentSizes[commentData.id].height,
+                    y2: ArtData.height * (commentData.y / 100),
+                  };
+                  return commentPosition;
+                } else {
+                  commentStyle.borderTopRightRadius = "5px";
+                  commentStyle.transform = "translate(-100%,0)";
+                  const commentPosition = {
+                    id: commentData.id,
+                    x1:
+                      ArtData.width * (commentData.x / 100) -
+                      commentSizes[commentData.id].width,
+                    x2: ArtData.width * (commentData.x / 100),
+                    y1: ArtData.height * (commentData.y / 100),
+                    y2:
+                      ArtData.height * (commentData.y / 100) +
+                      commentSizes[commentData.id].height,
+                  };
+                  return commentPosition;
                 }
               }
+            };
+            const commentPosition = setPoint(comment);
+            const safeArea = {
+              x: ArtData.width * 0.02,
+              y: ArtData.height * 0.05,
+            };
+            const isOverlapping = commentPositions.some((position) => {
               return (
-                <div
-                  ref={commentRefs[comment.id]}
-                  className={styles.art_comment}
-                  key={index}
-                  style={commentStyle}
-                  onClick={() => console.log(commentSizes[comment.id])}
-                >
-                  <Stack
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
-                    spacing={1.5}
-                  >
-                    <p>{comment.text}</p>
-                    {comment.uid == user?.uid ? (
-                      <div
-                        style={{
-                          position: "relative",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                        onClick={() => deleteClick(comment.text, comment.id)}
-                      >
-                        <MdDeleteForever />
-                      </div>
-                    ) : (
-                      <div
-                        className={styles.like}
-                        style={{
-                          position: "relative",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                        onClick={() => likeClick(comment.id)}
-                      >
-                        {likes[comment.id] ? (
-                          <FaHeart
-                            className={styles.heartIcon}
-                            style={{ position: "absolute", color: "red" }}
-                          />
-                        ) : (
-                          <FaRegHeart
-                            className={styles.heartIcon}
-                            style={{ position: "absolute" }}
-                          />
-                        )}
-                        <p
-                          style={{ position: "absolute" }}
-                          className={styles.likeNum}
-                        >
-                          {comment.like}
-                        </p>
-                      </div>
-                    )}
-                  </Stack>
-                </div>
+                (position.x1 + safeArea.x < commentPosition.x1 &&
+                  position.x2 - safeArea.x > commentPosition.x1) ||
+                (position.x1 + safeArea.x < commentPosition.x2 &&
+                  position.x2 - safeArea.x > commentPosition.x2) ||
+                (position.y1 + safeArea.y < commentPosition.y1 &&
+                  position.y2 - safeArea.y > commentPosition.y1) ||
+                (position.y1 + safeArea.y < commentPosition.y2 &&
+                  position.y2 - safeArea.y > commentPosition.y2)
               );
-            })
-          : null}
+            });
+            if (commentState === 0) {
+              if (isOverlapping) {
+                console.log("重なっています");
+                // コメントIDから使用座標をcommentPositionsから削除する
+                // commentPositions = commentPositions.filter(
+                //   (position) => position.id !== comment.id
+                // );
+                commentStyle.opacity = 0;
+              } else {
+                commentPositions.push(setPoint(comment));
+                commentStyle.opacity = 1;
+              }
+            } else if (commentState === 1) {
+              commentStyle.opacity = 1;
+            } else {
+              commentStyle.opacity = 0;
+            }
+          }
+          return (
+            <div
+              ref={commentRefs[comment.id]}
+              className={styles.art_comment}
+              key={index}
+              style={commentStyle}
+              onClick={() => console.log(commentSizes[comment.id])}
+            >
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                spacing={1.5}
+              >
+                <p>{comment.text}</p>
+                {comment.uid == user?.uid ? (
+                  <div
+                    style={{
+                      position: "relative",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    onClick={() => deleteClick(comment.text, comment.id)}
+                  >
+                    <MdDeleteForever />
+                  </div>
+                ) : (
+                  <div
+                    className={styles.like}
+                    style={{
+                      position: "relative",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    onClick={() => likeClick(comment.id)}
+                  >
+                    {likes[comment.id] ? (
+                      <FaHeart
+                        className={styles.heartIcon}
+                        style={{ position: "absolute", color: "red" }}
+                      />
+                    ) : (
+                      <FaRegHeart
+                        className={styles.heartIcon}
+                        style={{ position: "absolute" }}
+                      />
+                    )}
+                    <p
+                      style={{ position: "absolute" }}
+                      className={styles.likeNum}
+                    >
+                      {comment.like}
+                    </p>
+                  </div>
+                )}
+              </Stack>
+            </div>
+          );
+        })}
         {/* <Menu
             id="basic-menu"
             anchorEl={anchorEl}
