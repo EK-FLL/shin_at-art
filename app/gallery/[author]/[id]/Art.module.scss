@@ -12,6 +12,7 @@
   padding: 5px 10px;
   border: 3px solid map-get(var.$theme, border);
   background-color: rgba($color: map-get(var.$theme, back), $alpha: 0.7);
+  animation: grow 0.2s ease-in-out;
 }
 .input {
   border-radius: 20px;
@@ -33,4 +34,31 @@
 }
 .likeNum {
   font-size: small;
+}
+.hidden {
+  animation: shrink 0.2s ease-in-out forwards; /* .hideクラスが追加されたら、shrinkアニメーションを実行 */
+}
+
+@keyframes grow {
+  0% {
+    font-size: 0;
+    opacity: 0;
+    visibility: visible;
+  }
+  100% {
+    font-size: 16px;
+    opacity: 1;
+  }
+}
+
+@keyframes shrink {
+  0% {
+    font-size: 16px;
+    opacity: 1;
+  }
+  100% {
+    font-size: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
 }

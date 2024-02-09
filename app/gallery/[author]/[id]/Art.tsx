@@ -76,9 +76,9 @@ const Art = ({ img, author, id }: Prop) => {
   const [commentSizes, setCommentSizes] = useState<{ [key: string]: DOMRect }>(
     {}
   );
-  const [commentState, setCommentState] = useState(0);
-  const handleComment = (event: React.SyntheticEvent, newValue: number) => {
-    setCommentState(newValue);
+  const [commentsState, setCommentsState] = useState(0);
+  const handleComments = (event: React.SyntheticEvent, newValue: number) => {
+    setCommentsState(newValue);
   };
   useEffect(() => {
     const commentsRef = collection(db, "arts", id, "comments");
@@ -262,8 +262,8 @@ const Art = ({ img, author, id }: Prop) => {
         spacing={2}
       >
         <Tabs
-          onChange={handleComment}
-          value={commentState}
+          onChange={handleComments}
+          value={commentsState}
           aria-label="Tabs where selection follows focus"
           selectionFollowsFocus
         >
@@ -282,6 +282,7 @@ const Art = ({ img, author, id }: Prop) => {
           ref={ArtRef}
         />
         {comments.map((comment, index) => {
+          let isHidden = false;
           let commentStyle: React.CSSProperties = {
             position: "absolute",
             left: comment.x + "%",
@@ -292,7 +293,6 @@ const Art = ({ img, author, id }: Prop) => {
             borderBottomLeftRadius: radiusDefault,
             borderBottomRightRadius: radiusDefault,
             whiteSpace: "nowrap",
-            opacity: 1,
           };
           if (commentSizes[comment.id]) {
             const setPoint = (commentData: {
@@ -311,7 +311,7 @@ const Art = ({ img, author, id }: Prop) => {
                 ) {
                   commentStyle.borderBottomLeftRadius = "5px";
                   commentStyle.transform = "translate(0,-100%)";
-                  const commentPosition = {
+                  const position = {
                     id: commentData.id,
                     x1: ArtData.width * (commentData.x / 100),
                     x2:
@@ -322,11 +322,11 @@ const Art = ({ img, author, id }: Prop) => {
                       commentSizes[commentData.id].height,
                     y2: ArtData.height * (commentData.y / 100),
                   };
-                  return commentPosition;
+                  return position;
                 } else {
                   commentStyle.borderTopLeftRadius = "5px";
                   commentStyle.transform = "translate(0,0)";
-                  const commentPosition = {
+                  const position = {
                     id: commentData.id,
                     x1: ArtData.width * (commentData.x / 100),
                     x2:
@@ -337,7 +337,7 @@ const Art = ({ img, author, id }: Prop) => {
                       ArtData.height * (commentData.y / 100) +
                       commentSizes[commentData.id].height,
                   };
-                  return commentPosition;
+                  return position;
                 }
               } else {
                 if (
@@ -346,7 +346,7 @@ const Art = ({ img, author, id }: Prop) => {
                 ) {
                   commentStyle.borderBottomRightRadius = "5px";
                   commentStyle.transform = "translate(-100%,-100%)";
-                  const commentPosition = {
+                  const position = {
                     id: commentData.id,
                     x1:
                       ArtData.width * (commentData.x / 100) -
@@ -357,11 +357,11 @@ const Art = ({ img, author, id }: Prop) => {
                       commentSizes[commentData.id].height,
                     y2: ArtData.height * (commentData.y / 100),
                   };
-                  return commentPosition;
+                  return position;
                 } else {
                   commentStyle.borderTopRightRadius = "5px";
                   commentStyle.transform = "translate(-100%,0)";
-                  const commentPosition = {
+                  const position = {
                     id: commentData.id,
                     x1:
                       ArtData.width * (commentData.x / 100) -
@@ -372,7 +372,7 @@ const Art = ({ img, author, id }: Prop) => {
                       ArtData.height * (commentData.y / 100) +
                       commentSizes[commentData.id].height,
                   };
-                  return commentPosition;
+                  return position;
                 }
               }
             };
@@ -393,28 +393,24 @@ const Art = ({ img, author, id }: Prop) => {
                   position.y2 - safeArea.y > commentPosition.y2)
               );
             });
-            if (commentState === 0) {
+            if (commentsState === 0) {
               if (isOverlapping) {
-                console.log("重なっています");
                 // コメントIDから使用座標をcommentPositionsから削除する
                 // commentPositions = commentPositions.filter(
                 //   (position) => position.id !== comment.id
                 // );
-                commentStyle.opacity = 0;
+                isHidden = true;
               } else {
                 commentPositions.push(setPoint(comment));
-                commentStyle.opacity = 1;
               }
-            } else if (commentState === 1) {
-              commentStyle.opacity = 1;
-            } else {
-              commentStyle.opacity = 0;
+            } else if (commentsState === 2) {
+              isHidden = true;
             }
           }
           return (
             <div
               ref={commentRefs[comment.id]}
-              className={styles.art_comment}
+              className={`${styles.art_comment} ${isHidden && styles.hidden}`}
               key={index}
               style={commentStyle}
               onClick={() => console.log(commentSizes[comment.id])}
