@@ -48,7 +48,8 @@ const Home = () => {
   }, []);
   return (
     <>
-      <h1>トップページてすと</h1>
+      <h1>トップページ</h1>
+      <p>atArtは現在開発中です！<br />栄光祭中のみ特別にページにアクセスできます。</p>
       <h2>作者</h2>
       {authors.map((author, index) => (
         <Link key={index} href={`/gallery/${author.id}`}>
