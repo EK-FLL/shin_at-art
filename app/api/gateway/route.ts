@@ -56,11 +56,12 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const headers = sanitizeHeaders(req.headers);
+    const body = await req.arrayBuffer();
 
     const response = await fetch(FIXED_TARGET_URL, {
       method: "POST",
       headers,
-      body: req.body,
+      body,
     });
 
     const responseHeaders = new Headers(response.headers);
@@ -78,6 +79,7 @@ export async function POST(req: NextRequest) {
     });
   }
 }
+
 
 export function OPTIONS() {
   const headers = new Headers();
