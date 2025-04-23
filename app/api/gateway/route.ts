@@ -85,49 +85,38 @@ export async function POST(req: NextRequest) {
     const headers = sanitizeHeaders(req.headers);
 
     // リクエストボディを取得
-    let body;
-    try {
-      // まずテキストとして読み取る
-      body = await req.text();
-      console.log("Request body:", body);
-    } catch (e) {
-      console.error("Failed to read request body:", e);
-      return new Response(
-        JSON.stringify({ error: "Failed to read request body" }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
-        }
-      );
-    }
+    const body = await req.text();
 
-    console.log("Forwarding POST request to:", FIXED_TARGET_URL);
-    console.log("Headers:", Object.fromEntries(headers.entries()));
-
+    // 実際のリクエストを送信
     const response = await fetch(FIXED_TARGET_URL, {
       method: "POST",
       headers,
       body,
     });
 
-    console.log("Received response with status:", response.status);
-
-    // 重要: レスポンスボディを明示的にテキストとして読み取る
+    // レスポンスデータを完全に読み込む
     const responseData = await response.text();
-    console.log("Response data length:", responseData.length);
 
-    const responseHeaders = new Headers(response.headers);
+    // 新しいヘッダーを作成
+    const responseHeaders = new Headers();
+
+    // 元のレスポンスヘッダーをコピー（Content-Encodingを除く）
+    const headersEntries = Array.from(response.headers.entries());
+    for (const [key, value] of headersEntries) {
+      if (key.toLowerCase() !== "content-encoding") {
+        responseHeaders.set(key, value);
+      }
+    }
+
+    // CORSヘッダーを設定
     setCORSHeaders(responseHeaders);
 
-    // Content-Typeが設定されていない場合、適切に設定
+    // Content-Typeが設定されていることを確認
     if (!responseHeaders.has("content-type")) {
       responseHeaders.set("Content-Type", "application/json");
     }
 
-    // 明示的なテキストデータでレスポンスを作成
+    // 明示的な文字列データでレスポンスを作成
     return new Response(responseData, {
       status: response.status,
       headers: responseHeaders,
