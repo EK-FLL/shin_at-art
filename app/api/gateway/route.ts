@@ -94,8 +94,8 @@ export async function POST(req: NextRequest) {
       body,
     });
 
-    // レスポンスデータを完全に読み込む
-    const responseData = await response.text();
+    // レスポンスデータをバイナリとして読み込む
+    const responseData = await response.arrayBuffer();
 
     // 新しいヘッダーを作成
     const responseHeaders = new Headers();
@@ -103,7 +103,13 @@ export async function POST(req: NextRequest) {
     // 元のレスポンスヘッダーをコピー（Content-Encodingを除く）
     const headersEntries = Array.from(response.headers.entries());
     for (const [key, value] of headersEntries) {
-      if (key.toLowerCase() !== "content-encoding") {
+      const lowerKey = key.toLowerCase();
+      // 圧縮関連のヘッダーは転送しない
+      if (
+        lowerKey !== "content-encoding" &&
+        lowerKey !== "content-length" &&
+        lowerKey !== "transfer-encoding"
+      ) {
         responseHeaders.set(key, value);
       }
     }
@@ -116,7 +122,7 @@ export async function POST(req: NextRequest) {
       responseHeaders.set("Content-Type", "application/json");
     }
 
-    // 明示的な文字列データでレスポンスを作成
+    // バイナリデータでレスポンスを作成
     return new Response(responseData, {
       status: response.status,
       headers: responseHeaders,
