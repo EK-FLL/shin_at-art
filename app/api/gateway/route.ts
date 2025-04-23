@@ -77,34 +77,8 @@ export async function POST(req: NextRequest) {
   try {
     const headers = sanitizeHeaders(req.headers);
 
-    // リクエストボディの処理を改善
-    let body;
-    const contentType = headers.get("content-type")?.toLowerCase() || "";
-
-    if (contentType.includes("application/json")) {
-      // JSONの場合はテキストとして読み取ってからパースを試みる
-      const text = await req.text();
-      try {
-        // 有効なJSONかチェック
-        JSON.parse(text);
-        body = text;
-      } catch (e) {
-        console.error("Invalid JSON in request:", e);
-        return new Response(JSON.stringify({ error: "Invalid JSON" }), {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
-        });
-      }
-    } else {
-      // JSON以外の場合はarrayBufferとして読み取る
-      body = await req.arrayBuffer();
-    }
-
-    console.log("Forwarding POST request to:", FIXED_TARGET_URL);
-    console.log("Headers:", Object.fromEntries(headers.entries()));
+    // リクエストボディをそのまま転送
+    const body = await req.text();
 
     const response = await fetch(FIXED_TARGET_URL, {
       method: "POST",
@@ -112,10 +86,22 @@ export async function POST(req: NextRequest) {
       body,
     });
 
-    console.log("Received response with status:", response.status);
+    // すべてのレスポンスヘッダーを保持
+    const responseHeaders = new Headers();
+    response.headers.forEach((value, key) => {
+      responseHeaders.set(key, value);
+    });
 
-    const responseHeaders = new Headers(response.headers);
-    setCORSHeaders(responseHeaders);
+    // CORSヘッダーを追加（既存のヘッダーを上書きしない）
+    if (!responseHeaders.has("Access-Control-Allow-Origin")) {
+      responseHeaders.set("Access-Control-Allow-Origin", "*");
+    }
+    if (!responseHeaders.has("Access-Control-Allow-Methods")) {
+      responseHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    }
+    if (!responseHeaders.has("Access-Control-Allow-Headers")) {
+      responseHeaders.set("Access-Control-Allow-Headers", "*");
+    }
 
     return new Response(response.body, {
       status: response.status,
@@ -123,12 +109,8 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     console.error("Proxy POST error:", err);
-
-    // 型ガードを使用してエラーを絞り込む
-    const errorMessage = err instanceof Error ? err.message : "Unknown error";
-
     return new Response(
-      JSON.stringify({ error: "Internal Server Error", details: errorMessage }),
+      JSON.stringify({ error: "Internal Server Error", details: err.message }),
       {
         status: 500,
         headers: {
