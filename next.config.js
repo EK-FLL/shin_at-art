@@ -4,16 +4,7 @@ const nextConfig = {
   reactStrictMode: true,
 
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "lh3.googleusercontent.com",
-      },
-      {
-        protocol: "https",
-        hostname: "firebasestorage.googleapis.com",
-      },
-    ],
+    domains: ["lh3.googleusercontent.com", "firebasestorage.googleapis.com"],
   },
 };
 
