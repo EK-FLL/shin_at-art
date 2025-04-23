@@ -47,17 +47,24 @@ export async function GET(req: NextRequest) {
       headers,
     });
 
+    // レスポンスボディをクローンしてから読み取る
+    const responseData = await response.clone().text();
+
     const responseHeaders = new Headers(response.headers);
     setCORSHeaders(responseHeaders);
 
-    return new Response(response.body, {
+    // Content-Typeが設定されていない場合、適切に設定
+    if (!responseHeaders.has("content-type")) {
+      responseHeaders.set("Content-Type", "application/json");
+    }
+
+    return new Response(responseData, {
       status: response.status,
       headers: responseHeaders,
     });
   } catch (err) {
     console.error("Proxy GET error:", err);
 
-    // 型ガードを使用してエラーを絞り込む
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
 
     return new Response(
@@ -77,8 +84,28 @@ export async function POST(req: NextRequest) {
   try {
     const headers = sanitizeHeaders(req.headers);
 
-    // リクエストボディをそのまま転送
-    const body = await req.text();
+    // リクエストボディを取得
+    let body;
+    try {
+      // まずテキストとして読み取る
+      body = await req.text();
+      console.log("Request body:", body);
+    } catch (e) {
+      console.error("Failed to read request body:", e);
+      return new Response(
+        JSON.stringify({ error: "Failed to read request body" }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      );
+    }
+
+    console.log("Forwarding POST request to:", FIXED_TARGET_URL);
+    console.log("Headers:", Object.fromEntries(headers.entries()));
 
     const response = await fetch(FIXED_TARGET_URL, {
       method: "POST",
@@ -86,24 +113,22 @@ export async function POST(req: NextRequest) {
       body,
     });
 
-    // すべてのレスポンスヘッダーを保持
-    const responseHeaders = new Headers();
-    response.headers.forEach((value, key) => {
-      responseHeaders.set(key, value);
-    });
+    console.log("Received response with status:", response.status);
 
-    // CORSヘッダーを追加（既存のヘッダーを上書きしない）
-    if (!responseHeaders.has("Access-Control-Allow-Origin")) {
-      responseHeaders.set("Access-Control-Allow-Origin", "*");
-    }
-    if (!responseHeaders.has("Access-Control-Allow-Methods")) {
-      responseHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    }
-    if (!responseHeaders.has("Access-Control-Allow-Headers")) {
-      responseHeaders.set("Access-Control-Allow-Headers", "*");
+    // 重要: レスポンスボディを明示的にテキストとして読み取る
+    const responseData = await response.text();
+    console.log("Response data length:", responseData.length);
+
+    const responseHeaders = new Headers(response.headers);
+    setCORSHeaders(responseHeaders);
+
+    // Content-Typeが設定されていない場合、適切に設定
+    if (!responseHeaders.has("content-type")) {
+      responseHeaders.set("Content-Type", "application/json");
     }
 
-    return new Response(response.body, {
+    // 明示的なテキストデータでレスポンスを作成
+    return new Response(responseData, {
       status: response.status,
       headers: responseHeaders,
     });
