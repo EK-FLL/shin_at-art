@@ -109,8 +109,12 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     console.error("Proxy POST error:", err);
+
+    // 型ガードを使用してエラーを絞り込む
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+
     return new Response(
-      JSON.stringify({ error: "Internal Server Error", details: err.message }),
+      JSON.stringify({ error: "Internal Server Error", details: errorMessage }),
       {
         status: 500,
         headers: {
